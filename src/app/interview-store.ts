@@ -1,3 +1,4 @@
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import {
   FlatItem,
@@ -162,6 +163,18 @@ export class InterviewStore {
     this.topics.update((topics) =>
       topics.map((t) => (t.id === topicId ? { ...t, name: trimmed } : t)),
     );
+    this.persistTopics();
+  }
+
+  reorderTopic(previousIndex: number, currentIndex: number): void {
+    if (previousIndex === currentIndex) {
+      return;
+    }
+    this.topics.update((topics) => {
+      const next = [...topics];
+      moveItemInArray(next, previousIndex, currentIndex);
+      return next;
+    });
     this.persistTopics();
   }
 

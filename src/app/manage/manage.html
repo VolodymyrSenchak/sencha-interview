@@ -19,10 +19,10 @@
     <div class="empty-state">No topics yet. Create your first topic above.</div>
   }
 
-  <mat-accordion multi>
+  <mat-accordion multi cdkDropList (cdkDropListDropped)="dropTopic($event)">
     @for (topic of store.topics(); track topic.id) {
       @if (isEditing('topic', topic.id)) {
-        <div class="inline-edit">
+        <div class="inline-edit" cdkDrag cdkDragDisabled>
           <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
             <mat-label>Topic name</mat-label>
             <input
@@ -37,11 +37,20 @@
         </div>
       } @else {
         <mat-expansion-panel
+          cdkDrag
           [expanded]="store.expandedTopicIds().has(topic.id)"
           (opened)="store.setTopicExpanded(topic.id, true)"
           (closed)="store.setTopicExpanded(topic.id, false)"
         >
           <mat-expansion-panel-header>
+            <mat-icon
+              cdkDragHandle
+              class="drag-handle"
+              aria-label="Reorder topic"
+              (click)="$event.stopPropagation()"
+            >
+              drag_indicator
+            </mat-icon>
             <mat-panel-title>{{ topic.name }}</mat-panel-title>
             <mat-panel-description>
               <span class="count-label">{{ itemCountLabel(topic) }}</span>

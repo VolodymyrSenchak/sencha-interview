@@ -28,6 +28,27 @@
   align-self: center;
 }
 
+.drag-handle {
+  align-self: center;
+  margin-right: 10px;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.cdk-drag-preview {
+  border-radius: 10px;
+  box-shadow: var(--mat-sys-level4);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.cdk-drop-list-dragging .mat-expansion-panel:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
 .header-actions {
   margin-left: auto;
   display: flex;

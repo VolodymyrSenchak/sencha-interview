@@ -1,3 +1,4 @@
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +28,9 @@ interface EditState {
   selector: 'app-manage',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CdkDrag,
+    CdkDragHandle,
+    CdkDropList,
     FormsModule,
     MatButtonModule,
     MatExpansionModule,
@@ -55,6 +59,10 @@ export class Manage {
   protected addTopic(): void {
     this.store.addTopic(this.newTopicName);
     this.newTopicName = '';
+  }
+
+  protected dropTopic(event: CdkDragDrop<Topic[]>): void {
+    this.store.reorderTopic(event.previousIndex, event.currentIndex);
   }
 
   protected deleteTopic(topic: Topic): void {

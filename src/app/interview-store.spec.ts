@@ -29,6 +29,22 @@ describe('InterviewStore', () => {
     expect(store.session().selectedTopicIds).toContain(topic.id);
   });
 
+  it('reorders topics and persists the new order', () => {
+    store.addTopic('React');
+    store.addTopic('Angular');
+    store.addTopic('CSS');
+
+    store.reorderTopic(2, 0);
+
+    expect(store.topics().map((t) => t.name)).toEqual(['CSS', 'React', 'Angular']);
+    const raw = localStorage.getItem('iqm.topics');
+    expect(JSON.parse(raw!).map((t: { name: string }) => t.name)).toEqual([
+      'CSS',
+      'React',
+      'Angular',
+    ]);
+  });
+
   it('persists topics through the storage adapter', async () => {
     seedTopicWithQuestion();
     const raw = localStorage.getItem('iqm.topics');
