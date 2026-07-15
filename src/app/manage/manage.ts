@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { InterviewStore } from '../interview-store';
 import { Question, SubQuestion, Topic } from '../models';
+import { exportTopicsPdf } from '../pdf-export';
 
 interface AddForm {
   kind: 'question' | 'sub';
@@ -54,6 +55,10 @@ export class Manage {
     const count =
       topic.questions.length + topic.questions.reduce((sum, q) => sum + q.subQuestions.length, 0);
     return count === 1 ? '1 item' : `${count} items`;
+  }
+
+  protected exportPdf(): void {
+    void exportTopicsPdf(this.store.topics());
   }
 
   protected addTopic(): void {

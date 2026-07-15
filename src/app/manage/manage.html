@@ -13,6 +13,10 @@
       <mat-icon>add</mat-icon>
       Add Topic
     </button>
+    <button matButton="outlined" [disabled]="store.topics().length === 0" (click)="exportPdf()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Export PDF
+    </button>
   </div>
 
   @if (store.topics().length === 0) {
