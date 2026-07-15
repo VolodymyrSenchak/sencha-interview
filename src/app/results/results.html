@@ -12,21 +12,45 @@
       <mat-card-content>
         <div class="columns">
           <div class="column">
-            <div class="column-label strong">Strong</div>
+            <div class="column-label-row">
+              <span class="column-label strong">Strong</span>
+              @if (result.strong.length > 0) {
+                <button
+                  matIconButton
+                  class="copy-btn"
+                  aria-label="Copy strong sides"
+                  (click)="copyStrong(result.strong)"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              }
+            </div>
             @if (result.strong.length === 0) {
               <div class="item">—</div>
             }
             @for (text of result.strong; track $index) {
-              <div class="item">{{ text }}</div>
+              <div class="item">- {{ text }}</div>
             }
           </div>
           <div class="column">
-            <div class="column-label weak">Weak</div>
+            <div class="column-label-row">
+              <span class="column-label weak">Weak</span>
+              @if (result.weak.length > 0) {
+                <button
+                  matIconButton
+                  class="copy-btn"
+                  aria-label="Copy weak sides"
+                  (click)="copyWeak(result.weak)"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              }
+            </div>
             @if (result.weak.length === 0) {
               <div class="item">—</div>
             }
-            @for (text of result.weak; track $index) {
-              <div class="item">{{ text }}</div>
+            @for (item of result.weak; track $index) {
+              <div class="item">- {{ weakLine(item) }}</div>
             }
           </div>
         </div>
@@ -34,16 +58,26 @@
     </mat-card>
   }
 
-  @if (store.allWeakItems().length > 0) {
+  @if (store.weakGroups().length > 0) {
     <mat-card appearance="outlined" class="all-weak">
       <mat-card-header>
         <mat-card-title class="all-weak-title">All Weak Sides</mat-card-title>
+        <button
+          matIconButton
+          class="copy-btn all-weak-copy"
+          aria-label="Copy all weak sides"
+          (click)="copyAllWeak()"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
       </mat-card-header>
       <mat-card-content>
-        @for (item of store.allWeakItems(); track $index) {
-          <div class="all-weak-row">
-            <span class="all-weak-topic">{{ item.topicName }}:</span>
-            <span>{{ item.text }}</span>
+        @for (group of store.weakGroups(); track group.topicId) {
+          <div class="weak-group">
+            <div class="weak-group-topic">{{ group.topicName }}</div>
+            @for (item of group.items; track $index) {
+              <div class="weak-group-item">- {{ weakLine(item) }}</div>
+            }
           </div>
         }
       </mat-card-content>

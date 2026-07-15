@@ -41,10 +41,17 @@ export interface TopicResult {
   topicId: string;
   topicName: string;
   strong: string[];
-  weak: string[];
+  weak: WeakQuestion[];
 }
 
-export interface WeakItem {
-  topicName: string;
+/** A question with a weak mark and/or weak sub-questions, for the "All Weak Sides" summary. */
+export interface WeakQuestion {
   text: string;
+  weakSubs: string[];
+}
+
+export interface TopicWeakGroup {
+  topicId: string;
+  topicName: string;
+  items: WeakQuestion[];
 }

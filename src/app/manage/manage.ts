@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { InterviewStore } from '../interview-store';
 import { Question, SubQuestion, Topic } from '../models';
-import { MarkButtons } from '../shared/mark-buttons';
 
 interface AddForm {
   kind: 'question' | 'sub';
@@ -34,7 +33,6 @@ interface EditState {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MarkButtons,
   ],
   templateUrl: './manage.html',
   styleUrl: './manage.scss',

@@ -6,7 +6,8 @@ import {
   SubQuestion,
   Topic,
   TopicResult,
-  WeakItem,
+  TopicWeakGroup,
+  WeakQuestion,
 } from './models';
 import { StorageAdapter } from './storage/storage-adapter';
 
@@ -84,31 +85,32 @@ export class InterviewStore {
   readonly topicResults = computed<TopicResult[]>(() =>
     this.topics().map((topic) => {
       const strong: string[] = [];
-      const weak: string[] = [];
-      const bucket = (text: string, mark: number | null) => {
-        if (mark === null) {
-          return;
-        }
-        if (mark > 2) {
-          strong.push(text);
-        } else if (mark === 1 || mark === 2) {
-          weak.push(text);
-        }
-      };
+      const weak: WeakQuestion[] = [];
       for (const question of topic.questions) {
-        bucket(question.text, question.mark);
+        if (isStrong(question.mark)) {
+          strong.push(question.text);
+        }
         for (const sub of question.subQuestions) {
-          bucket(sub.text, sub.mark);
+          if (isStrong(sub.mark)) {
+            strong.push(sub.text);
+          }
+        }
+        // A question is listed as weak when it or any of its sub-questions is weak.
+        const weakSubs = question.subQuestions
+          .filter((sub) => isWeak(sub.mark))
+          .map((sub) => sub.text);
+        if (isWeak(question.mark) || weakSubs.length > 0) {
+          weak.push({ text: question.text, weakSubs });
         }
       }
       return { topicId: topic.id, topicName: topic.name, strong, weak };
     }),
   );
 
-  readonly allWeakItems = computed<WeakItem[]>(() =>
-    this.topicResults().flatMap((result) =>
-      result.weak.map((text) => ({ topicName: result.topicName, text })),
-    ),
+  readonly weakGroups = computed<TopicWeakGroup[]>(() =>
+    this.topicResults()
+      .map(({ topicId, topicName, weak }) => ({ topicId, topicName, items: weak }))
+      .filter((group) => group.items.length > 0),
   );
 
   constructor() {
@@ -343,6 +345,14 @@ export class InterviewStore {
       subQuestions: q.subQuestions.map((sub) => (sub.id === subQuestionId ? fn(sub) : sub)),
     }));
   }
+}
+
+function isStrong(mark: number | null): boolean {
+  return mark !== null && mark > 2;
+}
+
+function isWeak(mark: number | null): boolean {
+  return mark === 1 || mark === 2;
 }
 
 function toggleInSet(ids: ReadonlySet<string>, id: string): ReadonlySet<string> {

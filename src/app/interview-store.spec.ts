@@ -64,8 +64,14 @@ describe('InterviewStore', () => {
 
     const result = store.topicResults()[0];
     expect(result.strong).toEqual(['Explain closures']);
-    expect(result.weak).toEqual(['Weak one']);
-    expect(store.allWeakItems()).toEqual([{ topicName: 'React', text: 'Weak one' }]);
+    expect(result.weak).toEqual([{ text: 'Explain closures', weakSubs: ['Weak one'] }]);
+    expect(store.weakGroups()).toEqual([
+      {
+        topicId: store.topics()[0].id,
+        topicName: 'React',
+        items: [{ text: 'Explain closures', weakSubs: ['Weak one'] }],
+      },
+    ]);
   });
 
   it('restartInterview resets the session and pre-checks all topics but keeps marks', () => {

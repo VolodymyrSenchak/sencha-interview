@@ -23,8 +23,22 @@
 .columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 16px;
   margin-top: 12px;
+}
+
+.column {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  padding: 8px 12px 10px;
+}
+
+.column-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 4px;
+  min-height: 28px;
 }
 
 .column-label {
@@ -32,7 +46,6 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  padding-bottom: 6px;
 
   &.strong {
     color: #1e7e34;
@@ -43,10 +56,20 @@
   }
 }
 
+.copy-btn {
+  --mdc-icon-button-state-layer-size: 28px;
+  padding: 2px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
 .item {
   font-size: 13.5px;
-  padding: 7px 0;
-  border-top: 1px solid var(--mat-sys-outline-variant);
+  padding: 2px 0;
 }
 
 .all-weak {
@@ -59,19 +82,27 @@
   color: #c0392b;
 }
 
-.all-weak-row {
-  display: flex;
-  gap: 10px;
-  font-size: 13.5px;
-  padding: 7px 0;
-  border-top: 1px solid rgba(192, 57, 43, 0.15);
-  margin-top: 4px;
+.all-weak-copy {
+  margin-left: auto;
 }
 
-.all-weak-topic {
+.weak-group {
+  margin-top: 12px;
+
+  &:first-child {
+    margin-top: 4px;
+  }
+}
+
+.weak-group-topic {
   font-weight: 700;
   color: #c0392b;
-  flex-shrink: 0;
+  font-size: 13.5px;
+}
+
+.weak-group-item {
+  font-size: 13.5px;
+  padding: 2px 0 0 6px;
 }
 
 .new-interview-btn {

@@ -47,41 +47,49 @@
 } @else {
   <div class="running-page">
     <div class="progress-row">
-      <span>Question {{ store.currentIndex() + 1 }} of {{ store.flatItems().length }}</span>
+      <span>{{ scoredCount() }} of {{ store.flatItems().length }} scored</span>
       <span>{{ store.session().candidateName }}</span>
     </div>
     <mat-progress-bar mode="determinate" [value]="progressPercent()" />
 
-    @if (store.currentItem(); as item) {
-      <mat-card appearance="outlined" class="question-card">
-        <mat-card-content>
-          <mat-chip>{{ item.topicName }}</mat-chip>
-          @if (item.parentText) {
-            <div class="parent-text">Follow-up to: {{ item.parentText }}</div>
+    <div class="question-list">
+      @for (topic of selectedTopics(); track topic.id) {
+        <div class="topic-header">{{ topic.name }}</div>
+        @for (question of topic.questions; track question.id) {
+          <div class="item-row">
+            <span class="item-text" [class.scored]="question.mark !== null">
+              {{ question.text }}
+            </span>
+            @if (!hasScoredSub(question)) {
+              <app-mark-buttons
+                [mark]="question.mark"
+                (markChange)="store.setQuestionMark(topic.id, question.id, $event)"
+              />
+            }
+          </div>
+          @for (sub of question.subQuestions; track sub.id) {
+            <div class="item-row sub">
+              <div class="item-text" [class.scored]="sub.mark !== null">
+                {{ sub.text }}
+                @if (sub.description) {
+                  <div class="item-description">{{ sub.description }}</div>
+                }
+              </div>
+              <app-mark-buttons
+                [mark]="sub.mark"
+                (markChange)="store.setSubQuestionMark(topic.id, question.id, sub.id, $event)"
+              />
+            </div>
           }
-          <div class="question-text">{{ item.text }}</div>
-          @if (item.description) {
-            <div class="question-description">{{ item.description }}</div>
-          }
-          <div class="score-label">Score</div>
-          <app-mark-buttons size="large" [mark]="item.mark" (markChange)="setCurrentMark($event)" />
-        </mat-card-content>
-      </mat-card>
+        }
+      }
+    </div>
 
-      <div class="footer-row">
-        <button
-          matButton="outlined"
-          [disabled]="store.currentIndex() === 0"
-          (click)="previous()"
-        >
-          <mat-icon>chevron_left</mat-icon>
-          Previous
-        </button>
-        <button matButton="filled" (click)="nextOrFinish()">
-          {{ isLastItem() ? 'Finish' : 'Next' }}
-          <mat-icon iconPositionEnd>{{ isLastItem() ? 'check' : 'chevron_right' }}</mat-icon>
-        </button>
-      </div>
-    }
+    <div class="footer-row">
+      <button matButton="filled" (click)="finish()">
+        Finish
+        <mat-icon iconPositionEnd>check</mat-icon>
+      </button>
+    </div>
   </div>
 }

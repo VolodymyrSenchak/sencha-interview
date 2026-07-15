@@ -38,9 +38,9 @@
 }
 
 .running-page {
-  max-width: 700px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 22px 24px;
+  padding: 16px 24px 32px;
 }
 
 .progress-row {
@@ -51,36 +51,61 @@
   margin-bottom: 8px;
 }
 
-.question-card {
-  margin-top: 16px;
+.question-list {
+  margin-top: 8px;
 }
 
-.parent-text {
+.topic-header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mat-sys-primary);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  margin: 12px 0 2px;
+  padding-bottom: 2px;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 1px 0;
+
+  app-mark-buttons {
+    flex-shrink: 0;
+    --mat-button-toggle-height: 24px;
+    --mat-button-toggle-label-text-size: 12px;
+    --mat-button-toggle-shape: 6px;
+  }
+}
+
+.item-row.sub {
+  padding-left: 20px;
+}
+
+.item-text {
+  font-size: 13px;
+  line-height: 1.3;
+
+  &.scored {
+    font-weight: 600;
+  }
+}
+
+.sub .item-text {
   font-size: 12.5px;
+}
+
+.item-description {
   color: var(--mat-sys-on-surface-variant);
-  margin-top: 14px;
-}
-
-.question-text {
-  font-size: 18px;
-  font-weight: 500;
-  margin-top: 10px;
-}
-
-.question-description {
-  font-size: 13.5px;
-  color: var(--mat-sys-on-surface-variant);
-  margin-top: 6px;
-}
-
-.score-label {
   font-size: 12px;
-  color: var(--mat-sys-on-surface-variant);
-  margin: 16px 0 8px;
+  font-weight: 400;
 }
 
 .footer-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 16px;
 }

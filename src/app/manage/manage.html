@@ -85,10 +85,6 @@
                 <span class="row-text" (click)="store.toggleQuestionExpanded(question.id)">
                   {{ question.text }}
                 </span>
-                <app-mark-buttons
-                  [mark]="question.mark"
-                  (markChange)="store.setQuestionMark(topic.id, question.id, $event)"
-                />
                 <button matIconButton aria-label="Edit question" (click)="startEditQuestion(question)">
                   <mat-icon>edit</mat-icon>
                 </button>
@@ -132,10 +128,6 @@
                     <div class="sub-row">
                       <div class="sub-main">
                         <span class="row-text sub-text">{{ sub.text }}</span>
-                        <app-mark-buttons
-                          [mark]="sub.mark"
-                          (markChange)="store.setSubQuestionMark(topic.id, question.id, sub.id, $event)"
-                        />
                         <button matIconButton aria-label="Edit sub-question" (click)="startEditSub(sub)">
                           <mat-icon>edit</mat-icon>
                         </button>
