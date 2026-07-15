@@ -1,0 +1,24 @@
+<div class="shell">
+  <nav class="nav-rail">
+    <mat-icon class="logo">interpreter_mode</mat-icon>
+    <a class="nav-btn" routerLink="/manage" routerLinkActive="active">
+      <mat-icon>menu</mat-icon>
+      <span class="nav-label">Manage</span>
+    </a>
+    <a class="nav-btn" routerLink="/interview" routerLinkActive="active">
+      <mat-icon>play_arrow</mat-icon>
+      <span class="nav-label">Interview</span>
+    </a>
+    <a class="nav-btn" routerLink="/results" routerLinkActive="active">
+      <mat-icon>assessment</mat-icon>
+      <span class="nav-label">Results</span>
+    </a>
+  </nav>
+
+  <div class="main">
+    <mat-toolbar class="top-bar">{{ title() }}</mat-toolbar>
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

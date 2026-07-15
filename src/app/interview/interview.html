@@ -1,0 +1,87 @@
+@if (!store.session().started) {
+  <div class="setup-page">
+    <mat-card appearance="outlined">
+      <mat-card-content>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+          <mat-label>Candidate name (optional)</mat-label>
+          <input
+            matInput
+            placeholder="e.g. Jane Doe"
+            [ngModel]="store.session().candidateName"
+            (ngModelChange)="store.setCandidateName($event)"
+          />
+        </mat-form-field>
+
+        <div class="topics-label">Topics to include</div>
+        @if (hasAnyQuestions()) {
+          <div class="topic-list">
+            @for (topic of store.topics(); track topic.id) {
+              <div class="topic-option">
+                <mat-checkbox
+                  [checked]="isSelected(topic.id)"
+                  (change)="store.toggleSelectedTopic(topic.id)"
+                >
+                  {{ topic.name }}
+                </mat-checkbox>
+                <span class="topic-option-count">{{ questionCountLabel(topic) }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="no-questions">
+            No questions yet. Add topics and questions in the Manage view first.
+          </div>
+        }
+
+        <button
+          matButton="filled"
+          class="full-width"
+          [disabled]="store.flatItems().length === 0"
+          (click)="store.startInterview()"
+        >
+          Start Interview
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+} @else {
+  <div class="running-page">
+    <div class="progress-row">
+      <span>Question {{ store.currentIndex() + 1 }} of {{ store.flatItems().length }}</span>
+      <span>{{ store.session().candidateName }}</span>
+    </div>
+    <mat-progress-bar mode="determinate" [value]="progressPercent()" />
+
+    @if (store.currentItem(); as item) {
+      <mat-card appearance="outlined" class="question-card">
+        <mat-card-content>
+          <mat-chip>{{ item.topicName }}</mat-chip>
+          @if (item.parentText) {
+            <div class="parent-text">Follow-up to: {{ item.parentText }}</div>
+          }
+          <div class="question-text">{{ item.text }}</div>
+          @if (item.description) {
+            <div class="question-description">{{ item.description }}</div>
+          }
+          <div class="score-label">Score</div>
+          <app-mark-buttons size="large" [mark]="item.mark" (markChange)="setCurrentMark($event)" />
+        </mat-card-content>
+      </mat-card>
+
+      <div class="footer-row">
+        <button
+          matButton="outlined"
+          [disabled]="store.currentIndex() === 0"
+          (click)="previous()"
+        >
+          <mat-icon>chevron_left</mat-icon>
+          Previous
+        </button>
+        <button matButton="filled" (click)="nextOrFinish()">
+          {{ isLastItem() ? 'Finish' : 'Next' }}
+          <mat-icon iconPositionEnd>{{ isLastItem() ? 'check' : 'chevron_right' }}</mat-icon>
+        </button>
+      </div>
+    }
+  </div>
+}

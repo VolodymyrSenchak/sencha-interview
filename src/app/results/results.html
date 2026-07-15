@@ -1,0 +1,56 @@
+<div class="page">
+  <h1 class="title">Results</h1>
+  <div class="candidate">
+    {{ store.session().candidateName || 'No candidate name set' }}
+  </div>
+
+  @for (result of store.topicResults(); track result.topicId) {
+    <mat-card appearance="outlined" class="topic-card">
+      <mat-card-header>
+        <mat-card-title>{{ result.topicName }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="columns">
+          <div class="column">
+            <div class="column-label strong">Strong</div>
+            @if (result.strong.length === 0) {
+              <div class="item">—</div>
+            }
+            @for (text of result.strong; track $index) {
+              <div class="item">{{ text }}</div>
+            }
+          </div>
+          <div class="column">
+            <div class="column-label weak">Weak</div>
+            @if (result.weak.length === 0) {
+              <div class="item">—</div>
+            }
+            @for (text of result.weak; track $index) {
+              <div class="item">{{ text }}</div>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (store.allWeakItems().length > 0) {
+    <mat-card appearance="outlined" class="all-weak">
+      <mat-card-header>
+        <mat-card-title class="all-weak-title">All Weak Sides</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @for (item of store.allWeakItems(); track $index) {
+          <div class="all-weak-row">
+            <span class="all-weak-topic">{{ item.topicName }}:</span>
+            <span>{{ item.text }}</span>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <button matButton="filled" class="new-interview-btn" (click)="newInterview()">
+    New Interview
+  </button>
+</div>
