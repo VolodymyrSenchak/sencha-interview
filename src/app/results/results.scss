@@ -48,11 +48,11 @@
   letter-spacing: 0.4px;
 
   &.strong {
-    color: #1e7e34;
+    color: light-dark(#1e7e34, #81c995);
   }
 
   &.weak {
-    color: #c0392b;
+    color: light-dark(#c0392b, #f28b82);
   }
 }
 
@@ -74,12 +74,12 @@
 
 .all-weak {
   margin: 16px 0;
-  background: #fdecea;
-  border-color: rgba(192, 57, 43, 0.2);
+  background: light-dark(#fdecea, #3a2422);
+  border-color: light-dark(rgba(192, 57, 43, 0.2), rgba(242, 139, 130, 0.3));
 }
 
 .all-weak-title {
-  color: #c0392b;
+  color: light-dark(#c0392b, #f28b82);
 }
 
 .all-weak-copy {
@@ -96,7 +96,7 @@
 
 .weak-group-topic {
   font-weight: 700;
-  color: #c0392b;
+  color: light-dark(#c0392b, #f28b82);
   font-size: 13.5px;
 }
 

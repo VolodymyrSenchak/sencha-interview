@@ -4,6 +4,12 @@
 html {
   color-scheme: light;
 
+  // ThemeStore toggles this class on <html>; mat.theme() colors use
+  // light-dark(), so flipping color-scheme switches the whole palette.
+  &.dark-theme {
+    color-scheme: dark;
+  }
+
   @include mat.theme(
     (
       color: (
@@ -29,7 +35,7 @@ body {
 
 body {
   font-family: Roboto, system-ui, sans-serif;
-  background: #fafafa;
+  background: var(--mat-sys-surface-container-low);
   color: var(--mat-sys-on-surface);
   -webkit-font-smoothing: antialiased;
 }

@@ -16,7 +16,17 @@
   </nav>
 
   <div class="main">
-    <mat-toolbar class="top-bar">{{ title() }}</mat-toolbar>
+    <mat-toolbar class="top-bar">
+      <span>{{ title() }}</span>
+      <span class="spacer"></span>
+      <button
+        matIconButton
+        [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+        (click)="theme.toggle()"
+      >
+        <mat-icon>{{ theme.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+    </mat-toolbar>
     <main class="content">
       <router-outlet />
     </main>
