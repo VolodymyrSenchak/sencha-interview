@@ -98,6 +98,15 @@
                 <span class="row-text" (click)="store.toggleQuestionExpanded(question.id)">
                   {{ question.text }}
                 </span>
+                <button
+                  matIconButton
+                  aria-label="Edit code snippet"
+                  class="code-button"
+                  [class.has-code]="hasCode(question)"
+                  (click)="openCodeEditor(topic.id, question)"
+                >
+                  <mat-icon>code</mat-icon>
+                </button>
                 <button matIconButton aria-label="Edit question" (click)="startEditQuestion(question)">
                   <mat-icon>edit</mat-icon>
                 </button>

@@ -57,10 +57,22 @@
         <div class="topic-header">{{ topic.name }}</div>
         @for (question of topic.questions; track question.id) {
           <div class="item-row">
-            <span class="item-text" [class.scored]="question.mark !== null">
-              {{ question.text }}
-            </span>
-            @if (!hasScoredSub(question)) {
+            <div class="item-main">
+              <span class="item-text" [class.scored]="question.mark !== null">
+                {{ question.text }}
+              </span>
+              @if (hasCode(question)) {
+                <button
+                  matIconButton
+                  class="code-button"
+                  aria-label="View code snippet"
+                  (click)="openCode(question)"
+                >
+                  <mat-icon>code</mat-icon>
+                </button>
+              }
+            </div>
+            @if (!hasSubQuestions(question)) {
               <app-mark-buttons
                 [mark]="question.mark"
                 (markChange)="store.setQuestionMark(topic.id, question.id, $event)"

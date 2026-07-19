@@ -85,6 +85,27 @@
   padding-left: 20px;
 }
 
+.item-main {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.code-button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    color: var(--mat-sys-primary);
+  }
+}
+
 .item-text {
   font-size: 13px;
   line-height: 1.3;

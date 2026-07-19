@@ -226,6 +226,10 @@ export class InterviewStore {
     this.updateQuestion(topicId, questionId, (q) => ({ ...q, mark }));
   }
 
+  setQuestionCode(topicId: string, questionId: string, code: string): void {
+    this.updateQuestion(topicId, questionId, (q) => ({ ...q, code }));
+  }
+
   toggleQuestionExpanded(questionId: string): void {
     this.expandedQuestionIds.update((ids) => toggleInSet(ids, questionId));
   }

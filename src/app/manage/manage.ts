@@ -2,6 +2,7 @@ import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/d
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { InterviewStore } from '../interview-store';
 import { Question, SubQuestion, Topic } from '../models';
 import { exportTopicsPdf } from '../pdf-export';
+import { CodeEditorDialog, CodeEditorDialogData } from './code-editor-dialog';
 
 interface AddForm {
   kind: 'question' | 'sub';
@@ -44,6 +46,7 @@ interface EditState {
 })
 export class Manage {
   protected readonly store = inject(InterviewStore);
+  private readonly dialog = inject(MatDialog);
 
   protected newTopicName = '';
 
@@ -74,6 +77,22 @@ export class Manage {
     if (confirm(`Delete topic "${topic.name}" and all its questions?`)) {
       this.store.deleteTopic(topic.id);
     }
+  }
+
+  protected hasCode(question: Question): boolean {
+    return !!question.code?.trim();
+  }
+
+  protected openCodeEditor(topicId: string, question: Question): void {
+    const ref = this.dialog.open<CodeEditorDialog, CodeEditorDialogData, string>(CodeEditorDialog, {
+      width: '680px',
+      data: { questionText: question.text, code: question.code ?? '' },
+    });
+    ref.afterClosed().subscribe((code) => {
+      if (code !== undefined) {
+        this.store.setQuestionCode(topicId, question.id, code);
+      }
+    });
   }
 
   protected deleteQuestion(topicId: string, question: Question): void {

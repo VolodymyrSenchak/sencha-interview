@@ -10,6 +10,8 @@ export interface Question {
   text: string;
   mark: number | null;
   subQuestions: SubQuestion[];
+  /** Optional code snippet shown with the question; absent on data saved before this field existed. */
+  code?: string;
 }
 
 export interface Topic {
