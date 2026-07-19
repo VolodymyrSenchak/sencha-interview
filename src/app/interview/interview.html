@@ -50,15 +50,14 @@
       <span>{{ scoredCount() }} of {{ store.flatItems().length }} scored</span>
       <span>{{ store.session().candidateName }}</span>
     </div>
-    <mat-progress-bar mode="determinate" [value]="progressPercent()" />
 
     <div class="question-list">
       @for (topic of selectedTopics(); track topic.id) {
         <div class="topic-header">{{ topic.name }}</div>
         @for (question of topic.questions; track question.id) {
-          <div class="item-row">
+          <div class="item-row" [class.scored]="question.mark !== null">
             <div class="item-main">
-              <span class="item-text" [class.scored]="question.mark !== null">
+              <span class="item-text">
                 {{ question.text }}
               </span>
               @if (hasCode(question)) {
@@ -80,8 +79,8 @@
             }
           </div>
           @for (sub of question.subQuestions; track sub.id) {
-            <div class="item-row sub">
-              <div class="item-text" [class.scored]="sub.mark !== null">
+            <div class="item-row sub" [class.scored]="sub.mark !== null">
+              <div class="item-text">
                 {{ sub.text }}
                 @if (sub.description) {
                   <div class="item-description">{{ sub.description }}</div>

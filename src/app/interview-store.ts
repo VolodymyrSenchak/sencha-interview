@@ -36,7 +36,8 @@ export class InterviewStore {
 
   // Expand/collapse state persists while switching views (kept in-memory only).
   readonly expandedTopicIds = signal<ReadonlySet<string>>(new Set());
-  readonly expandedQuestionIds = signal<ReadonlySet<string>>(new Set());
+  // Questions are expanded by default, so only collapsed ids are tracked.
+  readonly collapsedQuestionIds = signal<ReadonlySet<string>>(new Set());
 
   /** Questions and sub-questions of the topics selected for the interview, in walk order. */
   readonly flatItems = computed<FlatItem[]>(() => {
@@ -230,12 +231,16 @@ export class InterviewStore {
     this.updateQuestion(topicId, questionId, (q) => ({ ...q, code }));
   }
 
+  isQuestionExpanded(questionId: string): boolean {
+    return !this.collapsedQuestionIds().has(questionId);
+  }
+
   toggleQuestionExpanded(questionId: string): void {
-    this.expandedQuestionIds.update((ids) => toggleInSet(ids, questionId));
+    this.collapsedQuestionIds.update((ids) => toggleInSet(ids, questionId));
   }
 
   setQuestionExpanded(questionId: string, expanded: boolean): void {
-    this.expandedQuestionIds.update((ids) => setInSet(ids, questionId, expanded));
+    this.collapsedQuestionIds.update((ids) => setInSet(ids, questionId, !expanded));
   }
 
   // --- Sub-questions ---

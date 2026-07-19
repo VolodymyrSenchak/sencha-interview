@@ -7,7 +7,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import { InterviewStore } from '../interview-store';
 import { Question, Topic } from '../models';
@@ -25,7 +24,6 @@ import { MarkButtons } from '../shared/mark-buttons';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatProgressBarModule,
     MarkButtons,
   ],
   templateUrl: './interview.html',
@@ -48,11 +46,6 @@ export class Interview {
   protected readonly scoredCount = computed(
     () => this.store.flatItems().filter((item) => item.mark !== null).length,
   );
-
-  protected readonly progressPercent = computed(() => {
-    const total = this.store.flatItems().length;
-    return total === 0 ? 0 : (this.scoredCount() / total) * 100;
-  });
 
   protected questionCountLabel(topic: Topic): string {
     const count =

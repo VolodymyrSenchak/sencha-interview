@@ -92,7 +92,7 @@
                   (click)="store.toggleQuestionExpanded(question.id)"
                 >
                   <mat-icon>
-                    {{ store.expandedQuestionIds().has(question.id) ? 'expand_more' : 'chevron_right' }}
+                    {{ store.isQuestionExpanded(question.id) ? 'expand_more' : 'chevron_right' }}
                   </mat-icon>
                 </button>
                 <span class="row-text" (click)="store.toggleQuestionExpanded(question.id)">
@@ -120,7 +120,7 @@
               </div>
             }
 
-            @if (store.expandedQuestionIds().has(question.id)) {
+            @if (store.isQuestionExpanded(question.id)) {
               <div class="sub-list">
                 @for (sub of question.subQuestions; track sub.id) {
                   @if (isEditing('sub', sub.id)) {
