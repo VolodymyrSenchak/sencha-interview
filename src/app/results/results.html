@@ -28,8 +28,8 @@
             @if (result.strong.length === 0) {
               <div class="item">—</div>
             }
-            @for (text of result.strong; track $index) {
-              <div class="item">- {{ text }}</div>
+            @for (item of result.strong; track $index) {
+              <div class="item">- {{ resultLine(item) }}</div>
             }
           </div>
           <div class="column">
@@ -50,7 +50,7 @@
               <div class="item">—</div>
             }
             @for (item of result.weak; track $index) {
-              <div class="item">- {{ weakLine(item) }}</div>
+              <div class="item">- {{ resultLine(item) }}</div>
             }
           </div>
         </div>
@@ -76,7 +76,7 @@
           <div class="weak-group">
             <div class="weak-group-topic">{{ group.topicName }}</div>
             @for (item of group.items; track $index) {
-              <div class="weak-group-item">- {{ weakLine(item) }}</div>
+              <div class="weak-group-item">- {{ resultLine(item) }}</div>
             }
           </div>
         }

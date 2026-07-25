@@ -79,13 +79,13 @@ describe('InterviewStore', () => {
     store.setQuestionMark(topicId, questions[2].id, 0);
 
     const result = store.topicResults()[0];
-    expect(result.strong).toEqual(['Explain closures']);
-    expect(result.weak).toEqual([{ text: 'Explain closures', weakSubs: ['Weak one'] }]);
+    expect(result.strong).toEqual([{ text: 'Explain closures', subs: [] }]);
+    expect(result.weak).toEqual([{ text: 'Explain closures', subs: ['Weak one'] }]);
     expect(store.weakGroups()).toEqual([
       {
         topicId: store.topics()[0].id,
         topicName: 'React',
-        items: [{ text: 'Explain closures', weakSubs: ['Weak one'] }],
+        items: [{ text: 'Explain closures', subs: ['Weak one'] }],
       },
     ]);
   });

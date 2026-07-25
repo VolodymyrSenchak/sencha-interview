@@ -4,11 +4,11 @@ import {
   FlatItem,
   InterviewSession,
   Question,
+  ResultQuestion,
   SubQuestion,
   Topic,
   TopicResult,
   TopicWeakGroup,
-  WeakQuestion,
 } from './models';
 import { StorageAdapter } from './storage/storage-adapter';
 
@@ -86,23 +86,22 @@ export class InterviewStore {
 
   readonly topicResults = computed<TopicResult[]>(() =>
     this.topics().map((topic) => {
-      const strong: string[] = [];
-      const weak: WeakQuestion[] = [];
+      const strong: ResultQuestion[] = [];
+      const weak: ResultQuestion[] = [];
       for (const question of topic.questions) {
-        if (isStrong(question.mark)) {
-          strong.push(question.text);
+        // A question is listed when it or any of its sub-questions matches,
+        // with the matching sub-questions grouped under it, e.g. Service Bus (TOPIC, QUEUE).
+        const strongSubs = question.subQuestions
+          .filter((sub) => isStrong(sub.mark))
+          .map((sub) => sub.text);
+        if (isStrong(question.mark) || strongSubs.length > 0) {
+          strong.push({ text: question.text, subs: strongSubs });
         }
-        for (const sub of question.subQuestions) {
-          if (isStrong(sub.mark)) {
-            strong.push(sub.text);
-          }
-        }
-        // A question is listed as weak when it or any of its sub-questions is weak.
         const weakSubs = question.subQuestions
           .filter((sub) => isWeak(sub.mark))
           .map((sub) => sub.text);
         if (isWeak(question.mark) || weakSubs.length > 0) {
-          weak.push({ text: question.text, weakSubs });
+          weak.push({ text: question.text, subs: weakSubs });
         }
       }
       return { topicId: topic.id, topicName: topic.name, strong, weak };

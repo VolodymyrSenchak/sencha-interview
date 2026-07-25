@@ -42,18 +42,21 @@ export interface FlatItem {
 export interface TopicResult {
   topicId: string;
   topicName: string;
-  strong: string[];
-  weak: WeakQuestion[];
+  strong: ResultQuestion[];
+  weak: ResultQuestion[];
 }
 
-/** A question with a weak mark and/or weak sub-questions, for the "All Weak Sides" summary. */
-export interface WeakQuestion {
+/**
+ * A question listed in the results because it and/or its sub-questions were marked.
+ * `subs` holds the matching sub-question texts, e.g. Service Bus (TOPIC, QUEUE).
+ */
+export interface ResultQuestion {
   text: string;
-  weakSubs: string[];
+  subs: string[];
 }
 
 export interface TopicWeakGroup {
   topicId: string;
   topicName: string;
-  items: WeakQuestion[];
+  items: ResultQuestion[];
 }
