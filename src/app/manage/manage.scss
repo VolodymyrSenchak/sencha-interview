@@ -67,6 +67,12 @@
   }
 }
 
+.sub-count {
+  margin-left: 4px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12.5px;
+}
+
 .code-button.has-code mat-icon {
   color: var(--mat-sys-primary);
 }

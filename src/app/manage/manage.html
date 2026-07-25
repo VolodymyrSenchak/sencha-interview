@@ -97,6 +97,9 @@
                 </button>
                 <span class="row-text" (click)="store.toggleQuestionExpanded(question.id)">
                   {{ question.text }}
+                  @if (question.subQuestions.length > 0) {
+                    <span class="sub-count">({{ question.subQuestions.length }})</span>
+                  }
                 </span>
                 <button
                   matIconButton
