@@ -22,7 +22,6 @@ export interface Topic {
 
 export interface InterviewSession {
   started: boolean;
-  candidateName: string;
   selectedTopicIds: string[];
   index: number;
 }

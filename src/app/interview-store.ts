@@ -17,7 +17,6 @@ const SESSION_KEY = 'iqm.session';
 
 const EMPTY_SESSION: InterviewSession = {
   started: false,
-  candidateName: '',
   selectedTopicIds: [],
   index: 0,
 };
@@ -308,11 +307,6 @@ export class InterviewStore {
 
   // --- Interview session ---
 
-  setCandidateName(name: string): void {
-    this.session.update((s) => ({ ...s, candidateName: name }));
-    this.persistSession();
-  }
-
   toggleSelectedTopic(topicId: string): void {
     this.session.update((s) => ({
       ...s,
@@ -351,7 +345,6 @@ export class InterviewStore {
     );
     this.session.set({
       started: false,
-      candidateName: '',
       selectedTopicIds: this.topics().map((t) => t.id),
       index: 0,
     });

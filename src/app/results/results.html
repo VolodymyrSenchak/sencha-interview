@@ -1,8 +1,5 @@
 <div class="page">
   <h1 class="title">Results</h1>
-  <div class="candidate">
-    {{ store.session().candidateName || 'No candidate name set' }}
-  </div>
 
   @for (result of store.topicResults(); track result.topicId) {
     <mat-card appearance="outlined" class="topic-card">

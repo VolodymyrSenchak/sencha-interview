@@ -2,16 +2,6 @@
   <div class="setup-page">
     <mat-card appearance="outlined">
       <mat-card-content>
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
-          <mat-label>Candidate name (optional)</mat-label>
-          <input
-            matInput
-            placeholder="e.g. Jane Doe"
-            [ngModel]="store.session().candidateName"
-            (ngModelChange)="store.setCandidateName($event)"
-          />
-        </mat-form-field>
-
         <div class="topics-label">Topics to include</div>
         @if (hasAnyQuestions()) {
           <div class="topic-list">
@@ -48,7 +38,6 @@
   <div class="running-page">
     <div class="progress-row">
       <span>{{ scoredCount() }} of {{ store.flatItems().length }} scored</span>
-      <span>{{ store.session().candidateName }}</span>
     </div>
 
     <div class="question-list">

@@ -1,12 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { InterviewStore } from '../interview-store';
 import { Question, Topic } from '../models';
@@ -17,13 +14,10 @@ import { MarkButtons } from '../shared/mark-buttons';
   selector: 'app-interview',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
     MarkButtons,
   ],
   templateUrl: './interview.html',
