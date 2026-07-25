@@ -90,7 +90,7 @@ describe('InterviewStore', () => {
     ]);
   });
 
-  it('restartInterview resets the session and pre-checks all topics but keeps marks', () => {
+  it('restartInterview resets the session, pre-checks all topics, and clears marks', () => {
     const { topicId, questionId } = seedTopicWithQuestion();
     store.setQuestionMark(topicId, questionId, 3);
     store.setCandidateName('Jane');
@@ -101,7 +101,7 @@ describe('InterviewStore', () => {
     expect(store.session().started).toBe(false);
     expect(store.session().candidateName).toBe('');
     expect(store.session().selectedTopicIds).toEqual([topicId]);
-    expect(store.topics()[0].questions[0].mark).toBe(3);
+    expect(store.topics()[0].questions[0].mark).toBeNull();
   });
 
   it('deleting a topic removes it from the interview selection', () => {

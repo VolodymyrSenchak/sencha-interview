@@ -327,14 +327,25 @@ export class InterviewStore {
     this.persistSession();
   }
 
-  /** Back to setup with all topics pre-checked; marks are kept. */
+  /** Back to setup with all topics pre-checked and all marks cleared. */
   restartInterview(): void {
+    this.topics.update((topics) =>
+      topics.map((t) => ({
+        ...t,
+        questions: t.questions.map((q) => ({
+          ...q,
+          mark: null,
+          subQuestions: q.subQuestions.map((sub) => ({ ...sub, mark: null })),
+        })),
+      })),
+    );
     this.session.set({
       started: false,
       candidateName: '',
       selectedTopicIds: this.topics().map((t) => t.id),
       index: 0,
     });
+    this.persistTopics();
     this.persistSession();
   }
 
