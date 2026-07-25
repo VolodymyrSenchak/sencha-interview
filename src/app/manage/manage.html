@@ -69,7 +69,9 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
+          <div cdkDropList (cdkDropListDropped)="dropQuestion(topic.id, $event)">
           @for (question of topic.questions; track question.id) {
+            <div class="question-item" cdkDrag [cdkDragDisabled]="isEditing('question', question.id)">
             @if (isEditing('question', question.id)) {
               <div class="inline-edit">
                 <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
@@ -86,6 +88,13 @@
               </div>
             } @else {
               <div class="question-row">
+                <mat-icon
+                  cdkDragHandle
+                  class="drag-handle"
+                  aria-label="Reorder question"
+                >
+                  drag_indicator
+                </mat-icon>
                 <button
                   matIconButton
                   aria-label="Toggle sub-questions"
@@ -202,7 +211,9 @@
                 }
               </div>
             }
+            </div>
           }
+          </div>
 
           @if (isAddQuestionOpen(topic.id)) {
             <div class="inline-edit">

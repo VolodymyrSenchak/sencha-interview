@@ -73,6 +73,10 @@ export class Manage {
     this.store.reorderTopic(event.previousIndex, event.currentIndex);
   }
 
+  protected dropQuestion(topicId: string, event: CdkDragDrop<Question[]>): void {
+    this.store.reorderQuestion(topicId, event.previousIndex, event.currentIndex);
+  }
+
   protected deleteTopic(topic: Topic): void {
     if (confirm(`Delete topic "${topic.name}" and all its questions?`)) {
       this.store.deleteTopic(topic.id);

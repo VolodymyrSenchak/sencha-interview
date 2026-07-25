@@ -216,6 +216,17 @@ export class InterviewStore {
     this.updateQuestion(topicId, questionId, (q) => ({ ...q, text: trimmed }));
   }
 
+  reorderQuestion(topicId: string, previousIndex: number, currentIndex: number): void {
+    if (previousIndex === currentIndex) {
+      return;
+    }
+    this.updateTopic(topicId, (t) => {
+      const questions = [...t.questions];
+      moveItemInArray(questions, previousIndex, currentIndex);
+      return { ...t, questions };
+    });
+  }
+
   deleteQuestion(topicId: string, questionId: string): void {
     this.updateTopic(topicId, (t) => ({
       ...t,
