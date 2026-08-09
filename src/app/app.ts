@@ -1,9 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthStore } from './auth/auth-store';
+import { LoginDialog } from './auth/login-dialog';
 import { filter, map } from 'rxjs';
 import { InterviewStore } from './interview-store';
 import { ThemeStore } from './theme-store';
@@ -17,6 +21,7 @@ import { ThemeStore } from './theme-store';
     RouterLinkActive,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     MatToolbarModule,
   ],
   templateUrl: './app.html',
@@ -25,7 +30,9 @@ import { ThemeStore } from './theme-store';
 export class App {
   private readonly router = inject(Router);
   private readonly store = inject(InterviewStore);
+  private readonly dialog = inject(MatDialog);
   protected readonly theme = inject(ThemeStore);
+  protected readonly auth = inject(AuthStore);
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -45,4 +52,12 @@ export class App {
     }
     return 'Topics & Questions';
   });
+
+  protected openLogin(): void {
+    this.dialog.open<LoginDialog, undefined, boolean>(LoginDialog, { width: '360px' });
+  }
+
+  protected logout(): void {
+    this.auth.logout();
+  }
 }

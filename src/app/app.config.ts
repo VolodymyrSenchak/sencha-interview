@@ -1,7 +1,9 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
+import { authInterceptor } from './auth/auth-interceptor';
 import { LocalStorageAdapter } from './storage/local-storage-adapter';
 import { StorageAdapter } from './storage/storage-adapter';
 
@@ -9,7 +11,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    // Swap LocalStorageAdapter for a backend-API implementation later without touching the app.
+    provideHttpClient(withInterceptors([authInterceptor])),
+    // Local storage keeps the interview session and the offline copy of the
+    // questions; signed-in users additionally sync questions with the API.
     { provide: StorageAdapter, useClass: LocalStorageAdapter },
   ],
 };

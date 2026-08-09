@@ -1,4 +1,5 @@
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +8,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { AuthStore } from '../auth/auth-store';
 import { InterviewStore } from '../interview-store';
 import { Question, SubQuestion, Topic } from '../models';
 import { exportTopicsPdf } from '../pdf-export';
@@ -34,6 +36,7 @@ interface EditState {
     CdkDrag,
     CdkDragHandle,
     CdkDropList,
+    DatePipe,
     FormsModule,
     MatButtonModule,
     MatExpansionModule,
@@ -46,6 +49,7 @@ interface EditState {
 })
 export class Manage {
   protected readonly store = inject(InterviewStore);
+  protected readonly auth = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
 
   protected newTopicName = '';
@@ -62,6 +66,14 @@ export class Manage {
 
   protected exportPdf(): void {
     void exportTopicsPdf(this.store.topics());
+  }
+
+  protected saveToCloud(): void {
+    void this.store.saveToCloud();
+  }
+
+  protected reloadFromCloud(): void {
+    void this.store.loadFromCloud();
   }
 
   protected addTopic(): void {

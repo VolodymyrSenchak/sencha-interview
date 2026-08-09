@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { InterviewStore } from './interview-store';
 import { LocalStorageAdapter } from './storage/local-storage-adapter';
@@ -9,7 +10,7 @@ describe('InterviewStore', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [{ provide: StorageAdapter, useClass: LocalStorageAdapter }],
+      providers: [provideHttpClient(), { provide: StorageAdapter, useClass: LocalStorageAdapter }],
     });
     store = TestBed.inject(InterviewStore);
   });

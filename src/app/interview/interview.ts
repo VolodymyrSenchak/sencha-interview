@@ -13,13 +13,7 @@ import { MarkButtons } from '../shared/mark-buttons';
 @Component({
   selector: 'app-interview',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatIconModule,
-    MarkButtons,
-  ],
+  imports: [MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MarkButtons],
   templateUrl: './interview.html',
   styleUrl: './interview.scss',
 })

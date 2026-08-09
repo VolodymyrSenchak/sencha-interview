@@ -21,11 +21,37 @@
       <span class="spacer"></span>
       <button
         matIconButton
-        [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+        [attr.aria-label]="
+          theme.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+        "
         (click)="theme.toggle()"
       >
         <mat-icon>{{ theme.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
+
+      @if (auth.user(); as user) {
+        <button matIconButton aria-label="Account" [matMenuTriggerFor]="accountMenu">
+          @if (user.avatarUrl) {
+            <img class="avatar" [src]="user.avatarUrl" alt="" referrerpolicy="no-referrer" />
+          } @else {
+            <mat-icon>account_circle</mat-icon>
+          }
+        </button>
+        <mat-menu #accountMenu="matMenu">
+          <div class="account-info">
+            @if (user.name) {
+              <div class="account-name">{{ user.name }}</div>
+            }
+            <div class="account-email">{{ user.email }}</div>
+          </div>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Sign out</span>
+          </button>
+        </mat-menu>
+      } @else {
+        <button matButton="filled" class="login-button" (click)="openLogin()">Login</button>
+      }
     </mat-toolbar>
     <main class="content">
       <router-outlet />

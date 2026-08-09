@@ -17,7 +17,32 @@
       <mat-icon>picture_as_pdf</mat-icon>
       Export PDF
     </button>
+    @if (auth.isLoggedIn()) {
+      <button
+        matButton="outlined"
+        [disabled]="store.cloudStatus() !== 'idle'"
+        (click)="saveToCloud()"
+      >
+        <mat-icon>cloud_upload</mat-icon>
+        {{ store.cloudStatus() === 'saving' ? 'Saving…' : 'Save to cloud' }}
+      </button>
+    }
   </div>
+
+  @if (auth.isLoggedIn()) {
+    <div class="cloud-status">
+      @if (store.cloudStatus() === 'loading') {
+        <span>Loading questions from the cloud…</span>
+      } @else if (store.cloudError(); as error) {
+        <span class="error">{{ error }}</span>
+        <button matButton (click)="reloadFromCloud()">Retry</button>
+      } @else if (store.cloudSavedAt(); as savedAt) {
+        <span>Saved to the cloud at {{ savedAt | date: 'shortTime' }}</span>
+      } @else {
+        <span>Questions are loaded from the cloud. Use "Save to cloud" to store your changes.</span>
+      }
+    </div>
+  }
 
   @if (store.topics().length === 0) {
     <div class="empty-state">No topics yet. Create your first topic above.</div>
@@ -70,149 +95,161 @@
           </mat-expansion-panel-header>
 
           <div cdkDropList (cdkDropListDropped)="dropQuestion(topic.id, $event)">
-          @for (question of topic.questions; track question.id) {
-            <div class="question-item" cdkDrag [cdkDragDisabled]="isEditing('question', question.id)">
-            @if (isEditing('question', question.id)) {
-              <div class="inline-edit">
-                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
-                  <mat-label>Question</mat-label>
-                  <input
-                    matInput
-                    [ngModel]="editing()!.text"
-                    (ngModelChange)="editing()!.text = $event"
-                    (keyup.enter)="saveEdit(topic.id)"
-                  />
-                </mat-form-field>
-                <button matButton="filled" (click)="saveEdit(topic.id)">Save</button>
-                <button matButton (click)="cancelEdit()">Cancel</button>
-              </div>
-            } @else {
-              <div class="question-row">
-                <mat-icon
-                  cdkDragHandle
-                  class="drag-handle"
-                  aria-label="Reorder question"
-                >
-                  drag_indicator
-                </mat-icon>
-                <button
-                  matIconButton
-                  aria-label="Toggle sub-questions"
-                  (click)="store.toggleQuestionExpanded(question.id)"
-                >
-                  <mat-icon>
-                    {{ store.isQuestionExpanded(question.id) ? 'expand_more' : 'chevron_right' }}
-                  </mat-icon>
-                </button>
-                <span class="row-text" (click)="store.toggleQuestionExpanded(question.id)">
-                  {{ question.text }}
-                  @if (question.subQuestions.length > 0) {
-                    <span class="sub-count">({{ question.subQuestions.length }})</span>
-                  }
-                </span>
-                <button
-                  matIconButton
-                  aria-label="Edit code snippet"
-                  class="code-button"
-                  [class.has-code]="hasCode(question)"
-                  (click)="openCodeEditor(topic.id, question)"
-                >
-                  <mat-icon>code</mat-icon>
-                </button>
-                <button matIconButton aria-label="Edit question" (click)="startEditQuestion(question)">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  matIconButton
-                  aria-label="Delete question"
-                  (click)="deleteQuestion(topic.id, question)"
-                >
-                  <mat-icon>close</mat-icon>
-                </button>
-              </div>
-            }
-
-            @if (store.isQuestionExpanded(question.id)) {
-              <div class="sub-list">
-                @for (sub of question.subQuestions; track sub.id) {
-                  @if (isEditing('sub', sub.id)) {
-                    <div class="inline-edit stacked">
-                      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                        <mat-label>Sub-question</mat-label>
-                        <input
-                          matInput
-                          [ngModel]="editing()!.text"
-                          (ngModelChange)="editing()!.text = $event"
-                        />
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                        <mat-label>Description (optional)</mat-label>
-                        <input
-                          matInput
-                          [ngModel]="editing()!.description"
-                          (ngModelChange)="editing()!.description = $event"
-                        />
-                      </mat-form-field>
-                      <div class="form-actions">
-                        <button matButton="filled" (click)="saveEdit(topic.id, question.id)">Save</button>
-                        <button matButton (click)="cancelEdit()">Cancel</button>
-                      </div>
-                    </div>
-                  } @else {
-                    <div class="sub-row">
-                      <div class="sub-main">
-                        <span class="row-text sub-text">{{ sub.text }}</span>
-                        <button matIconButton aria-label="Edit sub-question" (click)="startEditSub(sub)">
-                          <mat-icon>edit</mat-icon>
-                        </button>
-                        <button
-                          matIconButton
-                          aria-label="Delete sub-question"
-                          (click)="deleteSubQuestion(topic.id, question.id, sub)"
-                        >
-                          <mat-icon>close</mat-icon>
-                        </button>
-                      </div>
-                      @if (sub.description) {
-                        <div class="sub-description">{{ sub.description }}</div>
-                      }
-                    </div>
-                  }
-                }
-
-                @if (isAddSubOpen(question.id)) {
-                  <div class="inline-edit stacked">
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                      <mat-label>Sub-question</mat-label>
+            @for (question of topic.questions; track question.id) {
+              <div
+                class="question-item"
+                cdkDrag
+                [cdkDragDisabled]="isEditing('question', question.id)"
+              >
+                @if (isEditing('question', question.id)) {
+                  <div class="inline-edit">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
+                      <mat-label>Question</mat-label>
                       <input
                         matInput
-                        [ngModel]="addForm()!.text"
-                        (ngModelChange)="addForm()!.text = $event"
+                        [ngModel]="editing()!.text"
+                        (ngModelChange)="editing()!.text = $event"
+                        (keyup.enter)="saveEdit(topic.id)"
                       />
                     </mat-form-field>
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                      <mat-label>Description (optional)</mat-label>
-                      <input
-                        matInput
-                        [ngModel]="addForm()!.description"
-                        (ngModelChange)="addForm()!.description = $event"
-                      />
-                    </mat-form-field>
-                    <div class="form-actions">
-                      <button matButton="filled" (click)="submitAddForm()">Add</button>
-                      <button matButton (click)="cancelAddForm()">Cancel</button>
-                    </div>
+                    <button matButton="filled" (click)="saveEdit(topic.id)">Save</button>
+                    <button matButton (click)="cancelEdit()">Cancel</button>
                   </div>
                 } @else {
-                  <button matButton (click)="openAddSub(topic.id, question.id)">
-                    <mat-icon>add</mat-icon>
-                    Add sub-question
-                  </button>
+                  <div class="question-row">
+                    <mat-icon cdkDragHandle class="drag-handle" aria-label="Reorder question">
+                      drag_indicator
+                    </mat-icon>
+                    <button
+                      matIconButton
+                      aria-label="Toggle sub-questions"
+                      (click)="store.toggleQuestionExpanded(question.id)"
+                    >
+                      <mat-icon>
+                        {{
+                          store.isQuestionExpanded(question.id) ? 'expand_more' : 'chevron_right'
+                        }}
+                      </mat-icon>
+                    </button>
+                    <span class="row-text" (click)="store.toggleQuestionExpanded(question.id)">
+                      {{ question.text }}
+                      @if (question.subQuestions.length > 0) {
+                        <span class="sub-count">({{ question.subQuestions.length }})</span>
+                      }
+                    </span>
+                    <button
+                      matIconButton
+                      aria-label="Edit code snippet"
+                      class="code-button"
+                      [class.has-code]="hasCode(question)"
+                      (click)="openCodeEditor(topic.id, question)"
+                    >
+                      <mat-icon>code</mat-icon>
+                    </button>
+                    <button
+                      matIconButton
+                      aria-label="Edit question"
+                      (click)="startEditQuestion(question)"
+                    >
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button
+                      matIconButton
+                      aria-label="Delete question"
+                      (click)="deleteQuestion(topic.id, question)"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+
+                @if (store.isQuestionExpanded(question.id)) {
+                  <div class="sub-list">
+                    @for (sub of question.subQuestions; track sub.id) {
+                      @if (isEditing('sub', sub.id)) {
+                        <div class="inline-edit stacked">
+                          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                            <mat-label>Sub-question</mat-label>
+                            <input
+                              matInput
+                              [ngModel]="editing()!.text"
+                              (ngModelChange)="editing()!.text = $event"
+                            />
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                            <mat-label>Description (optional)</mat-label>
+                            <input
+                              matInput
+                              [ngModel]="editing()!.description"
+                              (ngModelChange)="editing()!.description = $event"
+                            />
+                          </mat-form-field>
+                          <div class="form-actions">
+                            <button matButton="filled" (click)="saveEdit(topic.id, question.id)">
+                              Save
+                            </button>
+                            <button matButton (click)="cancelEdit()">Cancel</button>
+                          </div>
+                        </div>
+                      } @else {
+                        <div class="sub-row">
+                          <div class="sub-main">
+                            <span class="row-text sub-text">{{ sub.text }}</span>
+                            <button
+                              matIconButton
+                              aria-label="Edit sub-question"
+                              (click)="startEditSub(sub)"
+                            >
+                              <mat-icon>edit</mat-icon>
+                            </button>
+                            <button
+                              matIconButton
+                              aria-label="Delete sub-question"
+                              (click)="deleteSubQuestion(topic.id, question.id, sub)"
+                            >
+                              <mat-icon>close</mat-icon>
+                            </button>
+                          </div>
+                          @if (sub.description) {
+                            <div class="sub-description">{{ sub.description }}</div>
+                          }
+                        </div>
+                      }
+                    }
+
+                    @if (isAddSubOpen(question.id)) {
+                      <div class="inline-edit stacked">
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                          <mat-label>Sub-question</mat-label>
+                          <input
+                            matInput
+                            [ngModel]="addForm()!.text"
+                            (ngModelChange)="addForm()!.text = $event"
+                          />
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                          <mat-label>Description (optional)</mat-label>
+                          <input
+                            matInput
+                            [ngModel]="addForm()!.description"
+                            (ngModelChange)="addForm()!.description = $event"
+                          />
+                        </mat-form-field>
+                        <div class="form-actions">
+                          <button matButton="filled" (click)="submitAddForm()">Add</button>
+                          <button matButton (click)="cancelAddForm()">Cancel</button>
+                        </div>
+                      </div>
+                    } @else {
+                      <button matButton (click)="openAddSub(topic.id, question.id)">
+                        <mat-icon>add</mat-icon>
+                        Add sub-question
+                      </button>
+                    }
+                  </div>
                 }
               </div>
             }
-            </div>
-          }
           </div>
 
           @if (isAddQuestionOpen(topic.id)) {

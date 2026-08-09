@@ -9,11 +9,7 @@ const MARKS = [0, 1, 2, 3, 4, 5];
   imports: [MatButtonToggle],
   template: `
     @for (value of marks; track value) {
-      <mat-button-toggle
-        [checked]="value === mark()"
-        (change)="toggle(value)"
-        class="marks"
-      >
+      <mat-button-toggle [checked]="value === mark()" (change)="toggle(value)" class="marks">
         {{ value }}
       </mat-button-toggle>
     }

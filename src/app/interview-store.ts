@@ -1,5 +1,7 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
+import { AuthStore } from './auth/auth-store';
+import { httpErrorMessage } from './http-error';
 import {
   FlatItem,
   InterviewSession,
@@ -10,10 +12,13 @@ import {
   TopicResult,
   TopicWeakGroup,
 } from './models';
+import { QuestionsApi } from './storage/questions-api';
 import { StorageAdapter } from './storage/storage-adapter';
 
 const TOPICS_KEY = 'iqm.topics';
 const SESSION_KEY = 'iqm.session';
+
+export type CloudStatus = 'idle' | 'loading' | 'saving';
 
 const EMPTY_SESSION: InterviewSession = {
   started: false,
@@ -28,10 +33,18 @@ function createId(): string {
 @Injectable({ providedIn: 'root' })
 export class InterviewStore {
   private readonly storage = inject(StorageAdapter);
+  private readonly auth = inject(AuthStore);
+  private readonly questionsApi = inject(QuestionsApi);
 
   readonly topics = signal<Topic[]>([]);
   readonly session = signal<InterviewSession>(EMPTY_SESSION);
   readonly ready = signal(false);
+
+  // Cloud state. The interview session itself is never sent to the API - it
+  // stays on this device in local storage.
+  readonly cloudStatus = signal<CloudStatus>('idle');
+  readonly cloudError = signal<string | null>(null);
+  readonly cloudSavedAt = signal<Date | null>(null);
 
   // Expand/collapse state persists while switching views (kept in-memory only).
   // Topics and questions are collapsed by default, so only expanded ids are tracked.
@@ -113,8 +126,71 @@ export class InterviewStore {
       .filter((group) => group.items.length > 0),
   );
 
+  /** Resolves once the local copy has been read, so a cloud load cannot be undone by it. */
+  private readonly localLoaded = this.load();
+
   constructor() {
-    void this.load();
+    effect(() => {
+      const loggedIn = this.auth.isLoggedIn();
+      untracked(() => {
+        this.cloudError.set(null);
+        this.cloudSavedAt.set(null);
+        if (loggedIn) {
+          // Signed in: the cloud copy wins, and changes go back with "Save to cloud".
+          void this.loadFromCloud();
+        }
+      });
+    });
+  }
+
+  // --- Cloud (signed-in users only) ---
+
+  async loadFromCloud(): Promise<void> {
+    if (!this.auth.isLoggedIn() || this.cloudStatus() !== 'idle') {
+      return;
+    }
+    this.cloudStatus.set('loading');
+    this.cloudError.set(null);
+    try {
+      const [topics] = await Promise.all([this.questionsApi.getTopics(), this.localLoaded]);
+      // Nothing saved yet - keep whatever this device already has.
+      if (topics) {
+        this.topics.set(topics);
+        this.persistTopics();
+        this.syncSessionWithTopics();
+      }
+    } catch (error) {
+      this.cloudError.set(httpErrorMessage(error, 'Could not load questions from the cloud.'));
+    } finally {
+      this.cloudStatus.set('idle');
+    }
+  }
+
+  async saveToCloud(): Promise<void> {
+    if (!this.auth.isLoggedIn() || this.cloudStatus() !== 'idle') {
+      return;
+    }
+    this.cloudStatus.set('saving');
+    this.cloudError.set(null);
+    try {
+      await this.questionsApi.saveTopics(this.topics());
+      this.cloudSavedAt.set(new Date());
+    } catch (error) {
+      this.cloudError.set(httpErrorMessage(error, 'Could not save questions to the cloud.'));
+    } finally {
+      this.cloudStatus.set('idle');
+    }
+  }
+
+  /** Drops selections pointing at topics the cloud copy does not have. */
+  private syncSessionWithTopics(): void {
+    const ids = this.topics().map((t) => t.id);
+    const known = new Set(ids);
+    this.session.update((s) => {
+      const selectedTopicIds = s.selectedTopicIds.filter((id) => known.has(id));
+      return { ...s, selectedTopicIds: selectedTopicIds.length > 0 ? selectedTopicIds : ids };
+    });
+    this.persistSession();
   }
 
   private async load(): Promise<void> {
