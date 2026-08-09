@@ -154,7 +154,7 @@ export class InterviewStore {
     try {
       const [topics] = await Promise.all([this.questionsApi.getTopics(), this.localLoaded]);
       // Nothing saved yet - keep whatever this device already has.
-      if (topics) {
+      if (topics && topics.length > 0) {
         this.topics.set(topics);
         this.persistTopics();
         this.syncSessionWithTopics();
