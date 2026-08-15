@@ -3,5 +3,5 @@ export function isMarkStrong(mark: number | null | undefined): boolean {
 }
 
 export function isMarkWeak(mark: number | null | undefined): boolean {
-  return mark === 1 || mark === 2;
+  return mark === 1 || mark === 2 || mark === 0;
 }

@@ -6,26 +6,23 @@ import { QuestionsApi } from '../api';
 import { StorageAdapter } from './storage-adapter';
 import { TopicsStore } from './topics.store';
 import { serializeTopics } from '@core/utils/topics.utils';
+import { InterviewSessionStore } from './interview-session.store';
 
 const TOPICS_KEY = 'iqm.topics';
-const SESSION_KEY = 'iqm.session';
 
 @Injectable({ providedIn: 'root' })
 export class InterviewStore {
   private readonly storage = inject(StorageAdapter);
   private readonly auth = inject(AuthStore);
   private readonly questionsApi = inject(QuestionsApi);
-  private readonly topicsStore = inject(TopicsStore);
 
-  getTopicsStore(): TopicsStore {
-    return this.topicsStore;
-  }
+  readonly topicsStore = inject(TopicsStore);
+  readonly sessionStore = inject(InterviewSessionStore);
 
-  readonly session = signal<InterviewSession>(EMPTY_SESSION);
   readonly ready = signal(false);
 
   readonly topicsWithMarks = computed<Topic[]>(() => {
-    const marks = this.session().marks ?? [];
+    const marks = this.sessionStore.session().marks ?? [];
     const marksMap = new Map(marks.map((m) => [m.questionId, m.mark]));
 
     return this.topicsStore.topics().map((topic) => ({
@@ -116,55 +113,17 @@ export class InterviewStore {
   }
 
   private async load(): Promise<void> {
-    const [topics, session] = await Promise.all([
+    const [topics] = await Promise.all([
       this.storage.get<Topic[]>(TOPICS_KEY),
-      this.storage.get<InterviewSession>(SESSION_KEY),
+      this.sessionStore.load(),
     ]);
     if (topics) {
       this.topicsStore.topics.set(topics);
-    }
-    if (session) {
-      this.session.set(session);
     }
     this.ready.set(true);
   }
 
   private persistTopics(): void {
     void this.storage.set(TOPICS_KEY, this.topicsStore.topics());
-  }
-
-  private persistSession(): void {
-    void this.storage.set(SESSION_KEY, this.session());
-  }
-
-  // --- Interview session ---
-
-  startInterview(): void {
-    this.session.update((s) => ({ ...s, started: true }));
-    this.persistSession();
-  }
-
-  setQuestionMark(questionId: string, mark: number | null): void {
-    this.session.update((s) => ({
-      ...s,
-      marks: [...s.marks.filter((m) => m.questionId !== questionId), { questionId, mark }],
-    }));
-    this.persistSession();
-  }
-
-  /** Back to setup with all marks cleared. */
-  restartInterview(): void {
-    this.topicsStore.topics.update((topics) =>
-      topics.map((t) => ({
-        ...t,
-        questions: t.questions.map((q) => ({
-          ...q,
-          mark: null,
-          subQuestions: q.subQuestions.map((sub) => ({ ...sub, mark: null })),
-        })),
-      })),
-    );
-    this.session.set(EMPTY_SESSION);
-    this.persistSession();
   }
 }

@@ -51,7 +51,7 @@ export class Manage {
   protected readonly store = inject(InterviewStore);
   protected readonly auth = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
-  protected readonly topicsStore = this.store.getTopicsStore();
+  protected readonly topicsStore = this.store.topicsStore;
 
   protected newTopicName = '';
 

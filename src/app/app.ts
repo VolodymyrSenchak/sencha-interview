@@ -44,7 +44,7 @@ export class App {
   protected readonly title = computed(() => {
     const url = this.url();
     if (url.startsWith('/interview')) {
-      return this.store.session().started ? 'Interview in progress' : 'Start Interview';
+      return this.store.sessionStore.session().started ? 'Interview in progress' : 'Start Interview';
     }
     if (url.startsWith('/results')) {
       return 'Results';

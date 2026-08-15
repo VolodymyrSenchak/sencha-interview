@@ -1,4 +1,4 @@
-@if (!store.session().started) {
+@if (!store.sessionStore.session().started) {
   <div class="setup-page">
     <mat-card appearance="outlined">
       <mat-card-content>
@@ -22,7 +22,7 @@
           matButton="filled"
           class="full-width"
           [disabled]="topicsWithQuestions().length === 0"
-          (click)="store.startInterview()"
+          (click)="store.sessionStore.startInterview()"
         >
           Start Interview
         </button>
@@ -54,7 +54,7 @@
             <app-mark-buttons
               [mark]="question.mark"
               [disabled]="hasMarkedSubQuestions(question)"
-              (markChange)="store.setQuestionMark(question.id, $event)"
+              (markChange)="store.sessionStore.setQuestionMark(question.id, $event)"
             />
           </div>
           @for (sub of question.subQuestions; track sub.id) {
@@ -67,7 +67,7 @@
               </div>
               <app-mark-buttons
                 [mark]="sub.mark"
-                (markChange)="store.setQuestionMark(sub.id, $event)"
+                (markChange)="store.sessionStore.setQuestionMark(sub.id, $event)"
               />
             </div>
           }

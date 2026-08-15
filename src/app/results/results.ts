@@ -51,7 +51,7 @@ export class Results {
   }
 
   protected newInterview(): void {
-    this.store.restartInterview();
+    this.store.sessionStore.restartInterview();
     void this.router.navigate(['/interview']);
   }
 }
