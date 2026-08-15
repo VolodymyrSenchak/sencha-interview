@@ -1,15 +1,14 @@
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { AuthStore } from '../../auth/auth-store';
 import { httpErrorMessage } from '../utils/http-error';
-import { EMPTY_SESSION, InterviewSession, Topic } from '../models';
+import { CloudStatus, EMPTY_SESSION, InterviewSession, Topic } from '../models';
 import { QuestionsApi } from '../api';
 import { StorageAdapter } from './storage-adapter';
 import { TopicsStore } from './topics.store';
+import { serializeTopics } from '@core/utils/topics.utils';
 
 const TOPICS_KEY = 'iqm.topics';
 const SESSION_KEY = 'iqm.session';
-
-export type CloudStatus = 'idle' | 'loading' | 'saving';
 
 @Injectable({ providedIn: 'root' })
 export class InterviewStore {
@@ -48,6 +47,12 @@ export class InterviewStore {
   readonly cloudError = signal<string | null>(null);
   readonly cloudSavedAt = signal<Date | null>(null);
 
+  private readonly savedTopics = signal(serializeTopics([]));
+
+  readonly hasUnsavedChanges = computed(
+    () => serializeTopics(this.topicsStore.topics()) !== this.savedTopics(),
+  );
+
   /** Resolves once the local copy has been read, so a cloud load cannot be undone by it. */
   private readonly localLoaded = this.load();
 
@@ -57,6 +62,8 @@ export class InterviewStore {
       untracked(() => {
         this.cloudError.set(null);
         this.cloudSavedAt.set(null);
+        // A previous account's snapshot says nothing about this one's cloud copy.
+        this.savedTopics.set(serializeTopics([]));
         if (loggedIn) {
           // Signed in: the cloud copy wins, and changes go back with "Save to cloud".
           void this.loadFromCloud();
@@ -75,10 +82,12 @@ export class InterviewStore {
     this.cloudError.set(null);
     try {
       const [topics] = await Promise.all([this.questionsApi.getTopics(), this.localLoaded]);
-      // Nothing saved yet - keep whatever this device already has.
+      // Nothing saved yet - keep whatever this device already has, and leave it
+      // marked as unsaved so the user is told to push it up.
       if (topics && topics.length > 0) {
         this.topicsStore.topics.set(topics);
         this.persistTopics();
+        this.savedTopics.set(serializeTopics(topics));
       }
     } catch (error) {
       this.cloudError.set(httpErrorMessage(error, 'Could not load questions from the cloud.'));
@@ -95,7 +104,9 @@ export class InterviewStore {
     this.cloudError.set(null);
     try {
       this.persistTopics();
-      await this.questionsApi.saveTopics(this.topicsStore.topics());
+      const saved = this.topicsStore.topics();
+      await this.questionsApi.saveTopics(saved);
+      this.savedTopics.set(serializeTopics(saved));
       this.cloudSavedAt.set(new Date());
     } catch (error) {
       this.cloudError.set(httpErrorMessage(error, 'Could not save questions to the cloud.'));

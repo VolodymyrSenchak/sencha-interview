@@ -57,3 +57,5 @@ export interface TopicWeakGroup {
   topicName: string;
   items: ResultQuestion[];
 }
+
+export type CloudStatus = 'idle' | 'loading' | 'saving';

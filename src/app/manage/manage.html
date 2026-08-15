@@ -13,18 +13,22 @@
       <mat-icon>add</mat-icon>
       Add Topic
     </button>
-    <button matButton="outlined" [disabled]="topicsStore.topics().length === 0" (click)="exportPdf()">
+    <button
+      matButton="outlined"
+      [disabled]="topicsStore.topics().length === 0"
+      (click)="exportPdf()"
+    >
       <mat-icon>picture_as_pdf</mat-icon>
       Export PDF
     </button>
     @if (auth.isLoggedIn()) {
       <button
-        matButton="outlined"
-        [disabled]="store.cloudStatus() !== 'idle'"
+        [matButton]="store.hasUnsavedChanges() ? 'filled' : 'outlined'"
+        [disabled]="store.cloudStatus() !== 'idle' || !store.hasUnsavedChanges()"
         (click)="saveToCloud()"
       >
         <mat-icon>cloud_upload</mat-icon>
-        {{ store.cloudStatus() === 'saving' ? 'Saving…' : 'Save to cloud' }}
+        {{ store.cloudStatus() === 'saving' ? 'Saving…' : 'Save' }}
       </button>
     }
   </div>
@@ -36,6 +40,11 @@
       } @else if (store.cloudError(); as error) {
         <span class="error">{{ error }}</span>
         <button matButton (click)="reloadFromCloud()">Retry</button>
+      } @else if (store.hasUnsavedChanges()) {
+        <span class="unsaved">
+          <mat-icon inline>warning</mat-icon>
+          You have unsaved changes. Press "Save" to store them in the cloud.
+        </span>
       } @else if (store.cloudSavedAt(); as savedAt) {
         <span>Saved to the cloud at {{ savedAt | date: 'shortTime' }}</span>
       } @else {

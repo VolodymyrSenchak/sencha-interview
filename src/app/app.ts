@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, HostListener, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -51,6 +51,18 @@ export class App {
     }
     return 'Topics & Questions';
   });
+
+  /**
+   * Closing or reloading the tab throws away edits that were never saved to the
+   * cloud, so let the browser ask first. The wording is the browser's own.
+   */
+  @HostListener('window:beforeunload', ['$event'])
+  protected confirmUnsavedChanges(event: BeforeUnloadEvent): void {
+    if (this.store.hasUnsavedChanges()) {
+      event.preventDefault();
+      event.returnValue = true; // Older Safari/Firefox ignore preventDefault() alone.
+    }
+  }
 
   protected openLogin(): void {
     this.dialog.open<LoginDialog, undefined, boolean>(LoginDialog, { width: '360px' });

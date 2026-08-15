@@ -27,6 +27,14 @@
   .error {
     color: var(--mat-sys-error);
   }
+
+  .unsaved {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--mat-sys-tertiary);
+    font-weight: 500;
+  }
 }
 
 .empty-state {
