@@ -13,7 +13,7 @@
       <mat-icon>add</mat-icon>
       Add Topic
     </button>
-    <button matButton="outlined" [disabled]="store.topics().length === 0" (click)="exportPdf()">
+    <button matButton="outlined" [disabled]="topicsStore.topics().length === 0" (click)="exportPdf()">
       <mat-icon>picture_as_pdf</mat-icon>
       Export PDF
     </button>
@@ -44,12 +44,12 @@
     </div>
   }
 
-  @if (store.topics().length === 0) {
+  @if (topicsStore.topics().length === 0) {
     <div class="empty-state">No topics yet. Create your first topic above.</div>
   }
 
   <mat-accordion multi cdkDropList (cdkDropListDropped)="dropTopic($event)">
-    @for (topic of store.topics(); track topic.id) {
+    @for (topic of topicsStore.topics(); track topic.id) {
       @if (isEditing('topic', topic.id)) {
         <div class="inline-edit" cdkDrag cdkDragDisabled>
           <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
@@ -67,9 +67,9 @@
       } @else {
         <mat-expansion-panel
           cdkDrag
-          [expanded]="store.expandedTopicIds().has(topic.id)"
-          (opened)="store.setTopicExpanded(topic.id, true)"
-          (closed)="store.setTopicExpanded(topic.id, false)"
+          [expanded]="isTopicExpanded(topic.id)"
+          (opened)="setTopicExpanded(topic.id, true)"
+          (closed)="setTopicExpanded(topic.id, false)"
         >
           <mat-expansion-panel-header>
             <mat-icon
@@ -123,15 +123,13 @@
                     <button
                       matIconButton
                       aria-label="Toggle sub-questions"
-                      (click)="store.toggleQuestionExpanded(question.id)"
+                      (click)="toggleQuestionExpanded(question.id)"
                     >
                       <mat-icon>
-                        {{
-                          store.isQuestionExpanded(question.id) ? 'expand_more' : 'chevron_right'
-                        }}
+                        {{ isQuestionExpanded(question.id) ? 'expand_more' : 'chevron_right' }}
                       </mat-icon>
                     </button>
-                    <span class="row-text" (click)="store.toggleQuestionExpanded(question.id)">
+                    <span class="row-text" (click)="toggleQuestionExpanded(question.id)">
                       {{ question.text }}
                       @if (question.subQuestions.length > 0) {
                         <span class="sub-count">({{ question.subQuestions.length }})</span>
@@ -163,7 +161,7 @@
                   </div>
                 }
 
-                @if (store.isQuestionExpanded(question.id)) {
+                @if (isQuestionExpanded(question.id)) {
                   <div class="sub-list">
                     @for (sub of question.subQuestions; track sub.id) {
                       @if (isEditing('sub', sub.id)) {

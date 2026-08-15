@@ -2,17 +2,12 @@
   <div class="setup-page">
     <mat-card appearance="outlined">
       <mat-card-content>
-        <div class="topics-label">Topics to include</div>
-        @if (hasAnyQuestions()) {
+        <div class="topics-label">Topics</div>
+        @if (topicsWithQuestions().length > 0) {
           <div class="topic-list">
-            @for (topic of store.topics(); track topic.id) {
+            @for (topic of topicsWithQuestions(); track topic.id) {
               <div class="topic-option">
-                <mat-checkbox
-                  [checked]="isSelected(topic.id)"
-                  (change)="store.toggleSelectedTopic(topic.id)"
-                >
-                  {{ topic.name }}
-                </mat-checkbox>
+                <span>{{ topic.name }}</span>
                 <span class="topic-option-count">{{ questionCountLabel(topic) }}</span>
               </div>
             }
@@ -26,7 +21,7 @@
         <button
           matButton="filled"
           class="full-width"
-          [disabled]="store.flatItems().length === 0"
+          [disabled]="topicsWithQuestions().length === 0"
           (click)="store.startInterview()"
         >
           Start Interview
@@ -36,12 +31,8 @@
   </div>
 } @else {
   <div class="running-page">
-    <div class="progress-row">
-      <span>{{ scoredCount() }} of {{ store.flatItems().length }} scored</span>
-    </div>
-
     <div class="question-list">
-      @for (topic of selectedTopics(); track topic.id) {
+      @for (topic of topicsWithQuestions(); track topic.id) {
         <div class="topic-header">{{ topic.name }}</div>
         @for (question of topic.questions; track question.id) {
           <div class="item-row" [class.scored]="question.mark !== null">
@@ -63,7 +54,7 @@
             <app-mark-buttons
               [mark]="question.mark"
               [disabled]="hasMarkedSubQuestions(question)"
-              (markChange)="store.setQuestionMark(topic.id, question.id, $event)"
+              (markChange)="store.setQuestionMark(question.id, $event)"
             />
           </div>
           @for (sub of question.subQuestions; track sub.id) {
@@ -76,7 +67,7 @@
               </div>
               <app-mark-buttons
                 [mark]="sub.mark"
-                (markChange)="store.setSubQuestionMark(topic.id, question.id, sub.id, $event)"
+                (markChange)="store.setQuestionMark(sub.id, $event)"
               />
             </div>
           }

@@ -1,7 +1,7 @@
 <div class="page">
   <h1 class="title">Results</h1>
 
-  @for (result of store.topicResults(); track result.topicId) {
+  @for (result of topicResults(); track result.topicId) {
     <mat-card appearance="outlined" class="topic-card">
       <mat-card-header>
         <mat-card-title>{{ result.topicName }}</mat-card-title>
@@ -55,7 +55,7 @@
     </mat-card>
   }
 
-  @if (store.weakGroups().length > 0) {
+  @if (weakGroups().length > 0) {
     <mat-card appearance="outlined" class="all-weak">
       <mat-card-header>
         <mat-card-title class="all-weak-title">All Weak Sides</mat-card-title>
@@ -69,7 +69,7 @@
         </button>
       </mat-card-header>
       <mat-card-content>
-        @for (group of store.weakGroups(); track group.topicId) {
+        @for (group of weakGroups(); track group.topicId) {
           <div class="weak-group">
             <div class="weak-group-topic">{{ group.topicName }}</div>
             @for (item of group.items; track $index) {

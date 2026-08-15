@@ -4,8 +4,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './auth/auth-interceptor';
-import { LocalStorageAdapter } from './storage/local-storage-adapter';
-import { StorageAdapter } from './storage/storage-adapter';
+import { LocalStorageAdapter, StorageAdapter } from '@core/store';
 
 export const appConfig: ApplicationConfig = {
   providers: [

@@ -2,16 +2,17 @@ export interface SubQuestion {
   id: string;
   text: string;
   description: string;
-  mark: number | null;
+  mark?: number | null; // optional because this field was added later; absent on data saved before it existed
 }
 
 export interface Question {
   id: string;
   text: string;
-  mark: number | null;
   subQuestions: SubQuestion[];
   /** Optional code snippet shown with the question; absent on data saved before this field existed. */
   code?: string;
+
+  mark?: number | null; // optional because this field was added later; absent on data saved before it existed
 }
 
 export interface Topic {
@@ -20,23 +21,20 @@ export interface Topic {
   questions: Question[];
 }
 
-export interface InterviewSession {
-  started: boolean;
-  selectedTopicIds: string[];
-  index: number;
-}
-
-/** One entry of the flattened question/sub-question walk used by the running interview. */
-export interface FlatItem {
-  topicId: string;
-  topicName: string;
+export interface QuestionMark {
   questionId: string;
-  subQuestionId: string | null;
-  text: string;
-  description: string | null;
-  parentText: string | null;
   mark: number | null;
 }
+
+export interface InterviewSession {
+  started: boolean;
+  marks: QuestionMark[];
+}
+
+export const EMPTY_SESSION: InterviewSession = {
+  started: false,
+  marks: [],
+};
 
 export interface TopicResult {
   topicId: string;

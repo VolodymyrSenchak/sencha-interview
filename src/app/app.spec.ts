@@ -3,8 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { App } from './app';
 import { routes } from './app.routes';
-import { LocalStorageAdapter } from './storage/local-storage-adapter';
-import { StorageAdapter } from './storage/storage-adapter';
+import { LocalStorageAdapter, StorageAdapter } from '@core/store';
 
 describe('App', () => {
   beforeEach(async () => {

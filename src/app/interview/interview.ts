@@ -1,19 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { InterviewStore } from '../interview-store';
-import { Question, Topic } from '../models';
+import { InterviewStore } from '@core/store';
+import { Question, Topic } from '@core/models';
 import { CodeViewerDialog, CodeViewerDialogData } from '../shared/code-viewer-dialog';
 import { MarkButtons } from '../shared/mark-buttons';
 
 @Component({
   selector: 'app-interview',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MarkButtons],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, MarkButtons],
   templateUrl: './interview.html',
   styleUrl: './interview.scss',
 })
@@ -22,17 +21,8 @@ export class Interview {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
-  protected readonly hasAnyQuestions = computed(() =>
-    this.store.topics().some((t) => t.questions.length > 0),
-  );
-
-  protected readonly selectedTopics = computed(() => {
-    const selected = new Set(this.store.session().selectedTopicIds);
-    return this.store.topics().filter((t) => selected.has(t.id) && t.questions.length > 0);
-  });
-
-  protected readonly scoredCount = computed(
-    () => this.store.flatItems().filter((item) => item.mark !== null).length,
+  protected readonly topicsWithQuestions = computed(() =>
+    this.store.topicsWithMarks().filter((t) => t.questions.length > 0),
   );
 
   protected questionCountLabel(topic: Topic): string {
@@ -55,10 +45,6 @@ export class Interview {
       width: '700px',
       data: { questionText: question.text, code: question.code ?? '' },
     });
-  }
-
-  protected isSelected(topicId: string): boolean {
-    return this.store.session().selectedTopicIds.includes(topicId);
   }
 
   protected finish(): void {

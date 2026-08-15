@@ -1,4 +1,4 @@
-import { Topic } from './models';
+import { Topic } from '../models/models';
 
 const PAGE_MARGIN = 15;
 const LINE_GAP = 1.5;

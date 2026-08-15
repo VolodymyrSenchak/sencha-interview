@@ -9,8 +9,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthStore } from './auth/auth-store';
 import { LoginDialog } from './auth/login-dialog';
 import { filter, map } from 'rxjs';
-import { InterviewStore } from './interview-store';
-import { ThemeStore } from './theme-store';
+import { InterviewStore, ThemeStore } from '@core/store';
 
 @Component({
   selector: 'app-root',

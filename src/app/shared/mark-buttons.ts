@@ -26,7 +26,7 @@ const MARKS = [0, 1, 2, 3, 4, 5];
       gap: 2px;
 
       // Callers can widen/narrow the whole scale from one place.
-      --mark-button-width: 25px;
+      --mark-button-width: 30px;
     }
 
     mat-button-toggle {

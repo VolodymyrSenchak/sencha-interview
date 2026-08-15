@@ -1,8 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { InterviewStore } from './interview-store';
-import { LocalStorageAdapter } from './storage/local-storage-adapter';
-import { StorageAdapter } from './storage/storage-adapter';
+import { LocalStorageAdapter } from './local-storage-adapter';
+import { StorageAdapter } from './storage-adapter';
 
 describe('InterviewStore', () => {
   let store: InterviewStore;
@@ -23,11 +23,9 @@ describe('InterviewStore', () => {
     return { topicId, questionId };
   }
 
-  it('adds a topic pre-checked for the interview', () => {
+  it('adds a topic', () => {
     store.addTopic('React');
-    const topic = store.topics()[0];
-    expect(topic.name).toBe('React');
-    expect(store.session().selectedTopicIds).toContain(topic.id);
+    expect(store.topics()[0].name).toBe('React');
   });
 
   it('reorders topics and persists the new order', () => {
@@ -53,45 +51,6 @@ describe('InterviewStore', () => {
     expect(JSON.parse(raw!)[0].questions[0].text).toBe('Explain closures');
   });
 
-  it('flattens questions and sub-questions of selected topics in walk order', () => {
-    const { topicId, questionId } = seedTopicWithQuestion();
-    store.addSubQuestion(topicId, questionId, 'What about loops?', 'var vs let');
-    store.addQuestion(topicId, 'Explain the event loop');
-
-    const items = store.flatItems();
-    expect(items.map((i) => i.text)).toEqual([
-      'Explain closures',
-      'What about loops?',
-      'Explain the event loop',
-    ]);
-    expect(items[1].parentText).toBe('Explain closures');
-    expect(items[1].description).toBe('var vs let');
-  });
-
-  it('buckets marks >2 as strong, 1-2 as weak, and omits unmarked and 0', () => {
-    const { topicId, questionId } = seedTopicWithQuestion();
-    store.addSubQuestion(topicId, questionId, 'Weak one', '');
-    store.addQuestion(topicId, 'Strong question');
-    store.addQuestion(topicId, 'Unmarked question');
-    store.addQuestion(topicId, 'Zero question');
-
-    const questions = store.topics()[0].questions;
-    store.setSubQuestionMark(topicId, questions[0].id, questions[0].subQuestions[0].id, 2);
-    store.setQuestionMark(topicId, questions[1].id, 4);
-    store.setQuestionMark(topicId, questions[3].id, 0);
-
-    const result = store.topicResults()[0];
-    expect(result.strong).toEqual([{ text: 'Strong question', subs: [] }]);
-    expect(result.weak).toEqual([{ text: 'Explain closures', subs: ['Weak one'] }]);
-    expect(store.weakGroups()).toEqual([
-      {
-        topicId: store.topics()[0].id,
-        topicName: 'React',
-        items: [{ text: 'Explain closures', subs: ['Weak one'] }],
-      },
-    ]);
-  });
-
   it('marking a sub-question clears the parent mark, clearing them all restores scoring', () => {
     const { topicId, questionId } = seedTopicWithQuestion();
     store.addSubQuestion(topicId, questionId, 'Weak one', '');
@@ -106,7 +65,7 @@ describe('InterviewStore', () => {
     expect(store.topics()[0].questions[0].mark).toBe(5);
   });
 
-  it('restartInterview resets the session, pre-checks all topics, and clears marks', () => {
+  it('restartInterview resets the session and clears marks', () => {
     const { topicId, questionId } = seedTopicWithQuestion();
     store.setQuestionMark(topicId, questionId, 3);
     store.startInterview();
@@ -114,14 +73,13 @@ describe('InterviewStore', () => {
     store.restartInterview();
 
     expect(store.session().started).toBe(false);
-    expect(store.session().selectedTopicIds).toEqual([topicId]);
+    expect(store.session().index).toBe(0);
     expect(store.topics()[0].questions[0].mark).toBeNull();
   });
 
-  it('deleting a topic removes it from the interview selection', () => {
+  it('deleting a topic drops its questions', () => {
     const { topicId } = seedTopicWithQuestion();
     store.deleteTopic(topicId);
     expect(store.topics()).toEqual([]);
-    expect(store.session().selectedTopicIds).toEqual([]);
   });
 });

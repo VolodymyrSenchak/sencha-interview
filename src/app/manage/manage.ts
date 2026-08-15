@@ -9,9 +9,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { AuthStore } from '../auth/auth-store';
-import { InterviewStore } from '../interview-store';
-import { Question, SubQuestion, Topic } from '../models';
-import { exportTopicsPdf } from '../pdf-export';
+import { exportTopicsPdf, setInSet, toggleInSet } from '@core/utils';
+import { InterviewStore } from '@core/store';
+import { Question, SubQuestion, Topic } from '@core/models';
 import { CodeEditorDialog, CodeEditorDialogData } from './code-editor-dialog';
 
 interface AddForm {
@@ -51,6 +51,7 @@ export class Manage {
   protected readonly store = inject(InterviewStore);
   protected readonly auth = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
+  protected readonly topicsStore = this.store.getTopicsStore();
 
   protected newTopicName = '';
 
@@ -58,14 +59,36 @@ export class Manage {
   protected readonly addForm = signal<AddForm | null>(null);
   protected readonly editing = signal<EditState | null>(null);
 
+  // Topics and questions are collapsed by default, so only expanded ids are tracked.
+  private readonly expandedTopicIds = signal<ReadonlySet<string>>(new Set());
+  private readonly expandedQuestionIds = signal<ReadonlySet<string>>(new Set());
+
   protected itemCountLabel(topic: Topic): string {
     const count =
       topic.questions.length + topic.questions.reduce((sum, q) => sum + q.subQuestions.length, 0);
     return count === 1 ? '1 item' : `${count} items`;
   }
 
+  // --- Expand / collapse ---
+
+  protected isTopicExpanded(topicId: string): boolean {
+    return this.expandedTopicIds().has(topicId);
+  }
+
+  protected setTopicExpanded(topicId: string, expanded: boolean): void {
+    this.expandedTopicIds.update((ids) => setInSet(ids, topicId, expanded ? 'add' : 'remove'));
+  }
+
+  protected isQuestionExpanded(questionId: string): boolean {
+    return this.expandedQuestionIds().has(questionId);
+  }
+
+  protected toggleQuestionExpanded(questionId: string): void {
+    this.expandedQuestionIds.update((ids) => toggleInSet(ids, questionId));
+  }
+
   protected exportPdf(): void {
-    void exportTopicsPdf(this.store.topics());
+    void exportTopicsPdf(this.topicsStore.topics());
   }
 
   protected saveToCloud(): void {
@@ -77,21 +100,21 @@ export class Manage {
   }
 
   protected addTopic(): void {
-    this.store.addTopic(this.newTopicName);
+    this.topicsStore.addTopic(this.newTopicName);
     this.newTopicName = '';
   }
 
   protected dropTopic(event: CdkDragDrop<Topic[]>): void {
-    this.store.reorderTopic(event.previousIndex, event.currentIndex);
+    this.topicsStore.reorderTopic(event.previousIndex, event.currentIndex);
   }
 
   protected dropQuestion(topicId: string, event: CdkDragDrop<Question[]>): void {
-    this.store.reorderQuestion(topicId, event.previousIndex, event.currentIndex);
+    this.topicsStore.reorderQuestion(topicId, event.previousIndex, event.currentIndex);
   }
 
   protected deleteTopic(topic: Topic): void {
     if (confirm(`Delete topic "${topic.name}" and all its questions?`)) {
-      this.store.deleteTopic(topic.id);
+      this.topicsStore.deleteTopic(topic.id);
     }
   }
 
@@ -106,20 +129,20 @@ export class Manage {
     });
     ref.afterClosed().subscribe((code) => {
       if (code !== undefined) {
-        this.store.setQuestionCode(topicId, question.id, code);
+        this.topicsStore.setQuestionCode(topicId, question.id, code);
       }
     });
   }
 
   protected deleteQuestion(topicId: string, question: Question): void {
     if (confirm(`Delete question "${question.text}"?`)) {
-      this.store.deleteQuestion(topicId, question.id);
+      this.topicsStore.deleteQuestion(topicId, question.id);
     }
   }
 
   protected deleteSubQuestion(topicId: string, questionId: string, sub: SubQuestion): void {
     if (confirm(`Delete sub-question "${sub.text}"?`)) {
-      this.store.deleteSubQuestion(topicId, questionId, sub.id);
+      this.topicsStore.deleteSubQuestion(topicId, questionId, sub.id);
     }
   }
 
@@ -149,9 +172,9 @@ export class Manage {
       return;
     }
     if (form.kind === 'question') {
-      this.store.addQuestion(form.topicId, form.text);
+      this.topicsStore.addQuestion(form.topicId, form.text);
     } else if (form.questionId) {
-      this.store.addSubQuestion(form.topicId, form.questionId, form.text, form.description);
+      this.topicsStore.addSubQuestion(form.topicId, form.questionId, form.text, form.description);
     }
     this.addForm.set(null);
   }
@@ -185,11 +208,11 @@ export class Manage {
       return;
     }
     if (edit.kind === 'topic') {
-      this.store.renameTopic(edit.id, edit.text);
+      this.topicsStore.renameTopic(edit.id, edit.text);
     } else if (edit.kind === 'question') {
-      this.store.updateQuestionText(topicId, edit.id, edit.text);
+      this.topicsStore.updateQuestionText(topicId, edit.id, edit.text);
     } else if (questionId) {
-      this.store.updateSubQuestion(topicId, questionId, edit.id, edit.text, edit.description);
+      this.topicsStore.updateSubQuestion(topicId, questionId, edit.id, edit.text, edit.description);
     }
     this.editing.set(null);
   }

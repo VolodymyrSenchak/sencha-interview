@@ -10,8 +10,8 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { environment } from '../../environments/environment';
-import { httpErrorMessage } from '../http-error';
-import { ThemeStore } from '../theme-store';
+import { httpErrorMessage } from '@core/utils';
+import { ThemeStore } from '@core/store';
 import { AuthStore } from './auth-store';
 import { GoogleCredentialResponse, loadGoogleIdentity } from './google-identity';
 
