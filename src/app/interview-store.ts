@@ -378,7 +378,15 @@ export class InterviewStore {
     subQuestionId: string,
     mark: number | null,
   ): void {
-    this.updateSub(topicId, questionId, subQuestionId, (sub) => ({ ...sub, mark }));
+    this.updateQuestion(topicId, questionId, (q) => {
+      const subQuestions = q.subQuestions.map((sub) =>
+        sub.id === subQuestionId ? { ...sub, mark } : sub,
+      );
+      // Marked sub-questions take over the scoring, so the parent's own mark is dropped
+      // (and its mark buttons disabled) until every sub-question is cleared again.
+      const scoredBySubs = subQuestions.some((sub) => sub.mark !== null);
+      return { ...q, subQuestions, mark: scoredBySubs ? null : q.mark };
+    });
   }
 
   // --- Interview session ---

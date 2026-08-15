@@ -16,7 +16,6 @@ export interface CodeViewerDialogData {
   template: `
     <h2 mat-dialog-title>Code snippet</h2>
     <mat-dialog-content>
-      <div class="question-text">{{ data.questionText }}</div>
       <pre class="code-block">{{ data.code }}</pre>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -28,12 +27,6 @@ export interface CodeViewerDialogData {
     </mat-dialog-actions>
   `,
   styles: `
-    .question-text {
-      margin-bottom: 12px;
-      color: var(--mat-sys-on-surface-variant);
-      font-size: 13.5px;
-    }
-
     .code-block {
       margin: 0;
       padding: 14px 16px;
@@ -41,8 +34,8 @@ export interface CodeViewerDialogData {
       border-radius: 10px;
       background: var(--mat-sys-surface-container);
       font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: 11px;
+      line-height: 1.4;
       tab-size: 2;
       overflow-x: auto;
     }

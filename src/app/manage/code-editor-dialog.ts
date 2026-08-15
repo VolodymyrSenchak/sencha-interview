@@ -23,7 +23,7 @@ export interface CodeEditorDialogData {
         <mat-label>Code</mat-label>
         <textarea
           matInput
-          rows="14"
+          rows="30"
           spellcheck="false"
           [(ngModel)]="code"
           (keydown.tab)="insertTab($event)"
@@ -47,8 +47,8 @@ export interface CodeEditorDialogData {
 
       textarea {
         font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
-        font-size: 13px;
-        line-height: 1.5;
+        font-size: 11px;
+        line-height: 1.4;
         white-space: pre;
         tab-size: 2;
       }

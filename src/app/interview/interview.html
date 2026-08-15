@@ -60,12 +60,11 @@
                 </button>
               }
             </div>
-            @if (!hasSubQuestions(question)) {
-              <app-mark-buttons
-                [mark]="question.mark"
-                (markChange)="store.setQuestionMark(topic.id, question.id, $event)"
-              />
-            }
+            <app-mark-buttons
+              [mark]="question.mark"
+              [disabled]="hasMarkedSubQuestions(question)"
+              (markChange)="store.setQuestionMark(topic.id, question.id, $event)"
+            />
           </div>
           @for (sub of question.subQuestions; track sub.id) {
             <div class="item-row sub" [class.scored]="sub.mark !== null">

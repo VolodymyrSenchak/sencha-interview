@@ -41,8 +41,9 @@ export class Interview {
     return `${count} q`;
   }
 
-  protected hasSubQuestions(question: Question): boolean {
-    return question.subQuestions.length > 0;
+  /** A question is scored through its sub-questions once any of them is marked. */
+  protected hasMarkedSubQuestions(question: Question): boolean {
+    return question.subQuestions.some((sub) => sub.mark !== null);
   }
 
   protected hasCode(question: Question): boolean {
@@ -51,7 +52,7 @@ export class Interview {
 
   protected openCode(question: Question): void {
     this.dialog.open<CodeViewerDialog, CodeViewerDialogData>(CodeViewerDialog, {
-      width: '680px',
+      width: '700px',
       data: { questionText: question.text, code: question.code ?? '' },
     });
   }

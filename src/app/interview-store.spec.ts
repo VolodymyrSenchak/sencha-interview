@@ -71,16 +71,17 @@ describe('InterviewStore', () => {
   it('buckets marks >2 as strong, 1-2 as weak, and omits unmarked and 0', () => {
     const { topicId, questionId } = seedTopicWithQuestion();
     store.addSubQuestion(topicId, questionId, 'Weak one', '');
+    store.addQuestion(topicId, 'Strong question');
     store.addQuestion(topicId, 'Unmarked question');
     store.addQuestion(topicId, 'Zero question');
 
     const questions = store.topics()[0].questions;
-    store.setQuestionMark(topicId, questions[0].id, 4);
     store.setSubQuestionMark(topicId, questions[0].id, questions[0].subQuestions[0].id, 2);
-    store.setQuestionMark(topicId, questions[2].id, 0);
+    store.setQuestionMark(topicId, questions[1].id, 4);
+    store.setQuestionMark(topicId, questions[3].id, 0);
 
     const result = store.topicResults()[0];
-    expect(result.strong).toEqual([{ text: 'Explain closures', subs: [] }]);
+    expect(result.strong).toEqual([{ text: 'Strong question', subs: [] }]);
     expect(result.weak).toEqual([{ text: 'Explain closures', subs: ['Weak one'] }]);
     expect(store.weakGroups()).toEqual([
       {
@@ -89,6 +90,20 @@ describe('InterviewStore', () => {
         items: [{ text: 'Explain closures', subs: ['Weak one'] }],
       },
     ]);
+  });
+
+  it('marking a sub-question clears the parent mark, clearing them all restores scoring', () => {
+    const { topicId, questionId } = seedTopicWithQuestion();
+    store.addSubQuestion(topicId, questionId, 'Weak one', '');
+    const subId = store.topics()[0].questions[0].subQuestions[0].id;
+
+    store.setQuestionMark(topicId, questionId, 4);
+    store.setSubQuestionMark(topicId, questionId, subId, 2);
+    expect(store.topics()[0].questions[0].mark).toBeNull();
+
+    store.setSubQuestionMark(topicId, questionId, subId, null);
+    store.setQuestionMark(topicId, questionId, 5);
+    expect(store.topics()[0].questions[0].mark).toBe(5);
   });
 
   it('restartInterview resets the session, pre-checks all topics, and clears marks', () => {
