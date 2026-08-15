@@ -71,7 +71,7 @@ const MARKS = [0, 1, 2, 3, 4, 5];
   `,
 })
 export class MarkButtons {
-  readonly mark = input<number | null>(null);
+  readonly mark = input<number | null | undefined>(null);
   readonly disabled = input(false);
   readonly markChange = output<number | null>();
 
