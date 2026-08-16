@@ -185,11 +185,14 @@
                           </mat-form-field>
                           <mat-form-field appearance="outline" subscriptSizing="dynamic">
                             <mat-label>Description (optional)</mat-label>
-                            <input
+                            <textarea
                               matInput
+                              cdkTextareaAutosize
+                              cdkAutosizeMinRows="3"
+                              cdkAutosizeMaxRows="12"
                               [ngModel]="editing()!.description"
                               (ngModelChange)="editing()!.description = $event"
-                            />
+                            ></textarea>
                           </mat-form-field>
                           <div class="form-actions">
                             <button matButton="filled" (click)="saveEdit(topic.id, question.id)">
@@ -236,11 +239,14 @@
                         </mat-form-field>
                         <mat-form-field appearance="outline" subscriptSizing="dynamic">
                           <mat-label>Description (optional)</mat-label>
-                          <input
+                          <textarea
                             matInput
+                            cdkTextareaAutosize
+                            cdkAutosizeMinRows="3"
+                            cdkAutosizeMaxRows="12"
                             [ngModel]="addForm()!.description"
                             (ngModelChange)="addForm()!.description = $event"
-                          />
+                          ></textarea>
                         </mat-form-field>
                         <div class="form-actions">
                           <button matButton="filled" (click)="submitAddForm()">Add</button>

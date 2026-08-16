@@ -1,4 +1,5 @@
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -43,6 +44,7 @@ interface EditState {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    TextFieldModule,
   ],
   templateUrl: './manage.html',
   styleUrl: './manage.scss',
