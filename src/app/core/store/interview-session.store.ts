@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { EMPTY_SESSION, InterviewSession } from '../models';
 import { StorageAdapter } from './storage-adapter';
 
@@ -8,6 +8,9 @@ const SESSION_KEY = 'iqm.session';
 export class InterviewSessionStore {
   private readonly storage = inject(StorageAdapter);
   readonly session = signal<InterviewSession>(EMPTY_SESSION);
+
+  /** Notes taken during the interview, empty for sessions saved before comments existed. */
+  readonly comments = computed(() => this.session().comments ?? '');
 
   async load(): Promise<void> {
     const session = await this.storage.get<InterviewSession>(SESSION_KEY);
@@ -26,6 +29,11 @@ export class InterviewSessionStore {
       ...s,
       marks: [...s.marks.filter((m) => m.questionId !== questionId), { questionId, mark }],
     }));
+    this.persistSession();
+  }
+
+  setComments(comments: string): void {
+    this.session.update((s) => ({ ...s, comments }));
     this.persistSession();
   }
 

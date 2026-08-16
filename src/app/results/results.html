@@ -81,6 +81,25 @@
     </mat-card>
   }
 
+  @if (comments()) {
+    <mat-card appearance="outlined" class="comments-card">
+      <mat-card-header>
+        <mat-card-title>Comments</mat-card-title>
+        <button
+          matIconButton
+          class="copy-btn comments-copy"
+          aria-label="Copy comments"
+          (click)="copyComments()"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="comments-text">{{ comments() }}</div>
+      </mat-card-content>
+    </mat-card>
+  }
+
   <button matButton="filled" class="new-interview-btn" (click)="newInterview()">
     New Interview
   </button>

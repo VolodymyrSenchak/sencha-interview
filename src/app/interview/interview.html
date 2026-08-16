@@ -31,6 +31,16 @@
   </div>
 } @else {
   <div class="running-page">
+      <button
+        matMiniFab 
+        class="comments-btn"
+        [class.has-comments]="hasComments()"
+        [attr.aria-label]="hasComments() ? 'Edit comments' : 'Add comments'"
+        (click)="openComments()"
+      >
+        <mat-icon>{{ hasComments() ? 'comment' : 'add_comment' }}</mat-icon>
+      </button>
+
     <div class="question-list">
       @for (topic of topicsWithQuestions(); track topic.id) {
         <div class="topic-header">{{ topic.name }}</div>
@@ -43,11 +53,9 @@
               @if (hasCode(question)) {
                 <button
                   matIconButton
-                  class="code-button"
-                  aria-label="View code snippet"
                   (click)="openCode(question)"
                 >
-                  <mat-icon>code</mat-icon>
+                  <mat-icon>terminal</mat-icon>
                 </button>
               }
             </div>

@@ -29,11 +29,14 @@ export interface QuestionMark {
 export interface InterviewSession {
   started: boolean;
   marks: QuestionMark[];
+  /** Free-form notes taken during the interview; absent on data saved before this field existed. */
+  comments?: string;
 }
 
 export const EMPTY_SESSION: InterviewSession = {
   started: false,
   marks: [],
+  comments: '',
 };
 
 export interface TopicResult {

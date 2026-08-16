@@ -51,6 +51,19 @@
   margin-bottom: 8px;
 }
 
+.comments-btn {
+  position: absolute;
+  right: 32px;
+
+  mat-icon {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &.has-comments mat-icon {
+    color: var(--mat-sys-primary);
+  }
+}
+
 .question-list {
   margin-top: 8px;
 }

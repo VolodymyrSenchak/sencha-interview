@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { InterviewStore } from '@core/store';
 import { Question, Topic } from '@core/models';
 import { CodeViewerDialog, CodeViewerDialogData } from '../shared/code-viewer-dialog';
+import { CommentsDialog, CommentsDialogData } from '../shared/comments-dialog';
 import { MarkButtons } from '../shared/mark-buttons';
 
 @Component({
@@ -24,6 +25,8 @@ export class Interview {
   protected readonly topicsWithQuestions = computed(() =>
     this.store.topicsWithMarks().filter((t) => t.questions.length > 0),
   );
+
+  protected readonly hasComments = computed(() => !!this.store.sessionStore.comments().trim());
 
   protected questionCountLabel(topic: Topic): string {
     const count =
@@ -45,6 +48,20 @@ export class Interview {
       width: '700px',
       data: { questionText: question.text, code: question.code ?? '' },
     });
+  }
+
+  protected openComments(): void {
+    this.dialog
+      .open<CommentsDialog, CommentsDialogData, string | undefined>(CommentsDialog, {
+        width: '560px',
+        data: { comments: this.store.sessionStore.comments() },
+      })
+      .afterClosed()
+      .subscribe((comments) => {
+        if (comments !== undefined) {
+          this.store.sessionStore.setComments(comments);
+        }
+      });
   }
 
   protected finish(): void {

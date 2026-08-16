@@ -22,6 +22,7 @@ export class Results {
 
   protected readonly topicResults = computed(() => toTopicResults(this.store.topicsWithMarks()));
   protected readonly weakGroups = computed(() => toWeakGroups(this.topicResults()));
+  protected readonly comments = computed(() => this.store.sessionStore.comments().trim());
 
   protected resultLine(item: ResultQuestion): string {
     return item.subs.length > 0 ? `${item.text} (${item.subs.join(', ')})` : item.text;
@@ -42,6 +43,10 @@ export class Results {
       )
       .join('\n\n');
     this.copy(text);
+  }
+
+  protected copyComments(): void {
+    this.copy(this.comments());
   }
 
   private copy(text: string): void {
